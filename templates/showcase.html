@@ -1,0 +1,271 @@
+{% extends 'base.html' %}
+{% from 'components/hero.html' import hero %}
+
+{% block content %}
+<div class="hero-section">
+    <div class="title-container">
+        <h1 class="text-title"><span class="word">Beats</span> <span class="word">and</span> <span class="word">Remixes</span></h1>
+        <p class="subtitle">Home made beats and remixes</p>
+    </div>
+</div>
+
+<form method="GET" action="{{ url_for('showcase') }}">
+    <div class="sort">Sort By:
+    <select name="sort" id="sort" onchange="this.form.submit()">
+        <option value="name_asc" {% if sort_by == 'name_asc' %}selected{% endif %}>A to Z</option>
+        <option value="name_desc" {% if sort_by == 'name_desc' %}selected{% endif %}>Z to A</option>
+        <option value="date_asc" {% if sort_by == 'date_asc' %}selected{% endif %}>Oldest</option>
+        <option value="date_desc" {% if sort_by == 'date_desc' %}selected{% endif %}>Most Recent</option>
+        <option value="play_count" {% if sort_by == 'play_count' %}selected{% endif %}>Most Played</option>
+        <option value="like_count" {% if sort_by == 'like_count' %}selected{% endif %}>Most Liked</option>
+    </select>
+    </div>
+</form>
+
+<div class="track-container">
+    {% for track in tracks %}
+    <div class="track-card">
+        <!-- Track Artwork -->
+        <div class="track-artwork">
+            <img src="{{ url_for('static', filename='uploads/' + (track.artwork or 'No Artwork')) }}" alt="Artwork">
+        </div>
+        
+        {% if track.artwork_secondary and track.artwork_secondary != "No Secondary Artwork" %}
+            <div class="track-artwork-secondary">
+                <img src="{{ url_for('static', filename='uploads/' + track.artwork_secondary) }}" alt="Secondary Artwork">
+            </div>
+        {% else %}
+            <!-- Track Information -->
+            <div class="track-info">
+                <h3>{{ track.name }}</h3>
+                <p>{{ track.description }}</p>
+            </div>
+        {% endif %}
+
+        <!-- Track Buttons -->
+        <div class="track-buttons">
+            <button class="play-track-btn" 
+                data-track-url="{{ url_for('static', filename='uploads/' + track.file) }}" 
+                data-track-name="{{ track.name }}" 
+                data-track-artwork="{{ url_for('static', filename='uploads/' + track.artwork) }}"
+                data-track-artwork-secondary="{{ url_for('static', filename='uploads/' + track.artwork_secondary) if track.artwork_secondary and track.artwork_secondary != 'No Secondary Artwork' else '' }}">
+                <i class="fas fa-play"></i>
+            </button>
+            
+            <button class="reaction-btn like-btn" data-track-id="{{ track.id }}" title="Like">
+                <i class="fas fa-thumbs-up"></i>
+                <span class="reaction-count like-count">{{ track.like_count or 0 }}</span>
+            </button>
+            
+            <button class="reaction-btn unlike-btn" data-track-id="{{ track.id }}" title="Unlike">
+                <i class="fas fa-thumbs-down"></i>
+                <span class="reaction-count unlike-count">{{ track.unlike_count or 0 }}</span>
+            </button>
+        </div>
+    </div>
+    {% if loop.last %}
+        <div class="last-track-spacer"></div>
+    {% endif %}
+    {% endfor %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log("Showcase page loaded");
+        
+        // Debug check for audio player
+        const audioPlayer = document.getElementById('global-audio-player');
+        console.log("Audio player element:", audioPlayer);
+        
+        // Force grid layout on track cards
+        function enforceGridLayout() {
+            const trackCards = document.querySelectorAll('.track-card');
+            
+            trackCards.forEach(card => {
+                // Force grid layout
+                card.style.display = 'grid';
+                card.style.gridTemplateColumns = 'auto 1fr auto';
+                card.style.gridTemplateAreas = '"artwork info buttons"';
+                card.style.alignItems = 'center';
+                card.style.gap = '20px';
+                
+                // Set artwork area
+                const artwork = card.querySelector('.track-artwork');
+                if (artwork) {
+                    artwork.style.gridArea = 'artwork';
+                    
+                    // Ensure animation classes work
+                    if (artwork.classList.contains('spinning')) {
+                        artwork.style.animation = 'spin 3s linear infinite';
+                    }
+                    if (artwork.classList.contains('paused')) {
+                        artwork.style.animationPlayState = 'paused';
+                    }
+                }
+                
+                // Set info area
+                const info = card.querySelector('.track-info');
+                if (info) {
+                    info.style.gridArea = 'info';
+                    info.style.display = 'block';
+                }
+                
+                // Set secondary artwork area
+                const secondaryArtwork = card.querySelector('.track-artwork-secondary');
+                if (secondaryArtwork) {
+                    secondaryArtwork.style.gridArea = 'info';
+                    
+                    // Ensure animation classes work
+                    if (secondaryArtwork.classList.contains('spinning')) {
+                        secondaryArtwork.style.animation = 'spin 3s linear infinite';
+                    }
+                    if (secondaryArtwork.classList.contains('paused')) {
+                        secondaryArtwork.style.animationPlayState = 'paused';
+                    }
+                }
+                
+                // Set buttons area
+                const buttons = card.querySelector('.track-buttons');
+                if (buttons) {
+                    buttons.style.gridArea = 'buttons';
+                    buttons.style.justifySelf = 'end';
+                    buttons.style.display = 'flex';
+                    buttons.style.alignItems = 'center';
+                    buttons.style.gap = '10px';
+                }
+            });
+        }
+        
+        // Run on load and on resize
+        enforceGridLayout();
+        window.addEventListener('resize', enforceGridLayout);
+        
+        // Add animation to track cards
+        const trackCards = document.querySelectorAll('.track-card');
+        trackCards.forEach((card, index) => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            
+            setTimeout(() => {
+                card.style.transition = 'all 0.5s ease';
+                card.style.opacity = '1';
+                card.style.transform = 'translateY(0)';
+            }, 100 * index);
+        });
+        
+        // Update play buttons to show correct icon
+        const updatePlayButtons = () => {
+            const globalAudio = document.getElementById('global-audio');
+            const playButtons = document.querySelectorAll('.play-track-btn');
+            
+            playButtons.forEach((button) => {
+                const isPlaying = !globalAudio.paused && globalAudio.src === button.dataset.trackUrl;
+                
+                // Clear existing content
+                button.innerHTML = '';
+                
+                // Create icon element
+                const icon = document.createElement('i');
+                icon.className = isPlaying ? 'fas fa-pause' : 'fas fa-play';
+                button.appendChild(icon);
+                
+                // Add playing class if this track is currently playing
+                if (isPlaying) {
+                    button.classList.add('playing');
+                } else {
+                    button.classList.remove('playing');
+                }
+            });
+        };
+        
+        // Listen for play/pause events on the global audio player
+        const globalAudio = document.getElementById('global-audio');
+        globalAudio.addEventListener('play', updatePlayButtons);
+        globalAudio.addEventListener('pause', updatePlayButtons);
+        
+        // Initial update
+        updatePlayButtons();
+        
+        // Ensure the player is visible when a track is clicked
+        const playButtons = document.querySelectorAll('.play-track-btn');
+        playButtons.forEach((button) => {
+            button.addEventListener('click', function() {
+                console.log("Play button clicked");
+                // Make sure the global audio player is visible
+                const audioPlayer = document.getElementById('global-audio-player');
+                audioPlayer.classList.add('active');
+                console.log("Added active class to audio player");
+                
+                // Double check after a short delay
+                setTimeout(function() {
+                    if (!audioPlayer.classList.contains('active')) {
+                        audioPlayer.classList.add('active');
+                        console.log("Re-added active class to audio player");
+                    }
+                }, 500);
+            });
+        });
+
+        // Like button functionality
+        document.querySelectorAll('.like-btn').forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+                const trackId = this.getAttribute('data-track-id');
+                const countElement = this.querySelector('.like-count');
+                
+                fetch('/track/like/' + trackId, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        countElement.textContent = data.like_count;
+                        // Visual feedback
+                        this.classList.add('active');
+                        setTimeout(() => {
+                            this.classList.remove('active');
+                        }, 500);
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+            });
+        });
+        
+        // Unlike button functionality
+        document.querySelectorAll('.unlike-btn').forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+                const trackId = this.getAttribute('data-track-id');
+                const countElement = this.querySelector('.unlike-count');
+                
+                fetch('/track/unlike/' + trackId, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        countElement.textContent = data.unlike_count;
+                        // Visual feedback
+                        this.classList.add('active');
+                        setTimeout(() => {
+                            this.classList.remove('active');
+                        }, 500);
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+            });
+        });
+    });
+</script>
+{% endblock %}
+

@@ -1,0 +1,669 @@
+/* track-display.css */
+.play-track-btn,
+.track-card button {
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+}
+
+.track-container {
+    max-height: calc(100vh - 150px);
+    max-width: 1020px;
+    width: 85%;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    padding: 20px;
+    padding-bottom: 100px; /* Add extra padding at the bottom */
+    margin: 20px auto;
+    margin-top: 20px;
+    background: linear-gradient(
+        135deg,
+        #0a0a0a 0%,
+        #1a1a1a 50%,
+        rgba(252, 66, 66, 0.05) 100%
+    );
+    border-radius: 10px;
+    box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.3);
+    position: relative;
+    z-index: 10;
+}
+
+.track-container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.track-container::-webkit-scrollbar-thumb {
+    background: rgba(245, 245, 220, 0.7);
+    border-radius: 4px;
+}
+
+.track-container::-webkit-scrollbar-thumb:hover {
+    background: #F5F5DC;
+}
+
+.track-card {
+    display: grid !important;
+    grid-template-columns: auto 1fr auto !important;
+    grid-template-areas: "artwork info buttons" !important;
+    -ms-grid-columns: auto 1fr auto !important;
+    align-items: center !important;
+    gap: 20px !important;
+    width: 100% !important;
+    height: 120px !important;
+    min-height: 120px !important;
+    padding: 15px 25px !important;
+    background-color: #1c1c1c !important;
+    border-radius: 10px !important;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3) !important;
+    border: 1px solid rgba(255, 255, 255, 0.05) !important;
+    box-sizing: border-box !important;
+    position: relative !important;
+    overflow: hidden !important;
+    transition: transform 0.3s ease, border 0.3s ease !important;
+}
+
+.track-card:hover {
+    transform: scale(1.02) !important;
+    border: 1px solid #fc4242 !important;
+}
+
+.track-card .track-artwork {
+    grid-area: artwork !important;
+    -ms-grid-column: 1 !important;
+    width: var(--track-artwork-size) !important;
+    height: var(--track-artwork-size) !important;
+    min-width: var(--track-artwork-size) !important;
+    border-radius: 50% !important;
+    overflow: hidden !important;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3) !important;
+    position: relative !important;
+    z-index: 2 !important;
+}
+
+.track-card .track-artwork img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: contain !important;
+    border-radius: 50% !important;
+}
+
+.track-card .track-artwork-secondary {
+    grid-area: info !important;
+    -ms-grid-column: 2 !important;
+    width: var(--track-artwork-secondary-width) !important;
+    height: var(--track-artwork-secondary-height) !important;
+    overflow: hidden !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    position: relative !important;
+    z-index: 2 !important;
+}
+
+.track-card .track-artwork-secondary img {
+    width: 80% !important;
+    height: 80% !important;
+    object-fit: contain !important;
+    margin-left: 0 !important;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.track-card .track-artwork.spinning,
+.track-artwork.spinning,
+.track-artwork-secondary.spinning {
+    animation: spin 3s linear infinite !important;
+}
+
+.track-card .track-artwork.paused,
+.track-artwork.paused,
+.track-artwork-secondary.paused {
+    animation-play-state: paused !important;
+}
+
+/* Track info styling */
+.track-card .track-info {
+    grid-area: info !important;
+    -ms-grid-column: 2 !important;
+    display: block !important;
+    text-align: left !important;
+    overflow: hidden !important;
+    position: relative !important;
+    z-index: 2 !important;
+    width: 100% !important;
+    font-family: var(--font-body) !important;
+    color: rgba(245, 245, 220, 0.9) !important;
+}
+
+.track-info h3 {
+    font-family: var(--font-primary) !important;
+    font-size: var(--font-size-md) !important;
+    font-weight: var(--weight-semibold) !important;
+    color: #f6f0dc !important;
+    margin-bottom: 8px !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+}
+
+.track-info p {
+    font-family: var(--font-body) !important;
+    font-size: var(--font-size-sm) !important;
+    font-weight: var(--weight-regular) !important;
+    margin-bottom: 0 !important;
+    max-height: 2.4em !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    display: -webkit-box !important;
+    -webkit-line-clamp: 2 !important;
+    -webkit-box-orient: vertical !important;
+    white-space: normal !important;
+    color: rgba(245, 245, 220, 0.8) !important;
+}
+
+.track-buttons {
+    display: flex;
+    gap: 12px;
+    margin-left: auto;
+    margin-right: 10px;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 2;
+    align-items: center;
+}
+
+.play-track-btn {
+    width: 46px !important;
+    height: 46px !important;
+    border-radius: 50% !important;
+    background-color: rgba(252, 66, 66, 0.1) !important;
+    border: 1px solid rgba(252, 66, 66, 0.3) !important;
+    position: relative;
+    transition: all 0.3s ease;
+    outline: none;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    visibility: visible !important;
+    z-index: 3;
+    overflow: hidden;
+}
+
+.play-track-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, rgba(252, 66, 66, 0.2) 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    border-radius: 50%;
+    transform: scale(0);
+}
+
+.play-track-btn i {
+    color: var(--primary-color);
+    font-size: 16px;
+    transition: all 0.3s ease;
+}
+
+.play-track-btn.active,
+.stop-track-btn.active,
+.restart-track-btn.active {
+    opacity: 0.8;
+}
+
+.play-track-btn.playing {
+    background-color: rgba(252, 66, 66, 0.2) !important;
+}
+
+.play-track-btn.playing i {
+    color: var(--primary-color);
+}
+
+.play-track-btn:hover {
+    transform: scale(1.1) !important;
+}
+
+.play-track-btn:hover::before {
+    opacity: 1;
+    transform: scale(1);
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.play-track-btn:hover i {
+    color: var(--primary-color) !important;
+}
+
+.track-card button {
+    padding: 6px 12px;
+    border-radius: 5px;
+    font-size: 13px;
+    width: 70px;
+    height: 35px;
+    color: #000000;
+    background-color: #F5F5DC;
+    border: none;
+    cursor: pointer;
+    transition: opacity 0.3s ease;
+    outline: none;
+}
+
+.track-card button:hover {
+    background-color: #fc4242;
+    opacity: 1;
+}
+
+.track-buttons button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Reaction Buttons (Like/Unlike) */
+.reaction-btn {
+    width: 40px !important;
+    height: 40px !important;
+    border-radius: 50% !important;
+    background-color: rgba(252, 66, 66, 0.1) !important;
+    border: 1px solid rgba(252, 66, 66, 0.3) !important;
+    position: relative;
+    transition: all 0.3s ease;
+    outline: none;
+    display: flex !important;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    visibility: visible !important;
+    z-index: 3;
+    padding: 5px 0 !important;
+    overflow: hidden;
+}
+
+.reaction-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, rgba(252, 66, 66, 0.2) 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    border-radius: 50%;
+    transform: scale(0);
+}
+
+.reaction-btn i {
+    color: var(--primary-color);
+    font-size: 14px;
+    transition: all 0.3s ease;
+    margin-bottom: 2px;
+}
+
+.reaction-count {
+    font-size: 10px;
+    color: var(--primary-color);
+    font-family: 'Agave', monospace;
+    font-weight: bold;
+    line-height: 1;
+}
+
+.reaction-btn:hover {
+    transform: scale(1.1) !important;
+}
+
+.reaction-btn:hover::before {
+    opacity: 1;
+    transform: scale(1);
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.reaction-btn:hover i {
+    color: var(--primary-color) !important;
+}
+
+.reaction-btn.active,
+.like-btn.active, 
+.unlike-btn.active {
+    background-color: rgba(252, 66, 66, 0.2) !important;
+    transform: scale(1.1) !important;
+}
+
+/* Media queries for responsive design */
+@media (max-width: 768px) {
+    .track-container {
+        padding: 15px;
+        margin: 15px auto;
+        max-height: calc(100vh - 120px);
+    }
+    
+    .track-card {
+        grid-template-columns: 60px 1fr auto !important;
+        gap: 15px !important;
+        padding: 10px !important;
+    }
+    
+    .track-card .track-artwork {
+        width: 60px !important;
+        height: 60px !important;
+        min-width: 60px !important;
+        min-height: 60px !important;
+        margin-right: 0 !important;
+    }
+    
+    .track-card .track-artwork-secondary {
+        width: 100% !important;
+        height: auto !important;
+    }
+    
+    .track-card .track-artwork-secondary img {
+        width: 100% !important;
+    }
+    
+    .track-info {
+        padding: 0 !important;
+    }
+    
+    .track-info h3 {
+        font-size: 1rem !important;
+        margin-bottom: 5px !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+    }
+    
+    .track-info p {
+        font-size: 0.8rem !important;
+        margin-bottom: 0 !important;
+        display: -webkit-box !important;
+        -webkit-line-clamp: 2 !important;
+        -webkit-box-orient: vertical !important;
+        overflow: hidden !important;
+    }
+    
+    .track-buttons {
+        gap: 8px !important;
+    }
+    
+    .track-buttons button {
+        padding: 4px 8px !important;
+        font-size: 11px !important;
+    }
+    
+    .reaction-btn {
+        width: 36px !important;
+        height: 36px !important;
+    }
+    
+    .play-track-btn {
+        width: 42px !important;
+        height: 42px !important;
+    }
+    
+    .reaction-btn i {
+        font-size: 12px;
+    }
+    
+    .play-track-btn i {
+        font-size: 14px;
+    }
+    
+    .reaction-count {
+        font-size: 9px;
+    }
+}
+
+@media (max-width: 480px) {
+    .track-container {
+        padding: 10px;
+        margin: 10px auto;
+    }
+    
+    .track-card {
+        grid-template-columns: 50px 1fr auto !important;
+        gap: 10px !important;
+    }
+    
+    .track-artwork,
+    .track-card .track-artwork {
+        width: 50px !important;
+        height: 50px !important;
+        min-width: 50px !important;
+        min-height: 50px !important;
+        margin-right: 0 !important;
+    }
+    
+    .track-artwork-secondary {
+        width: 100% !important;
+    }
+    
+    .track-info {
+        padding: 0 !important;
+    }
+    
+    .track-info h3 {
+        font-size: 0.9rem !important;
+    }
+    
+    .track-info p {
+        font-size: 0.75rem !important;
+    }
+    
+    .reaction-btn {
+        width: 32px !important;
+        height: 32px !important;
+    }
+    
+    .play-track-btn {
+        width: 38px !important;
+        height: 38px !important;
+    }
+    
+    .reaction-btn i {
+        font-size: 11px;
+    }
+    
+    .play-track-btn i {
+        font-size: 13px;
+    }
+    
+    .reaction-count {
+        font-size: 8px;
+    }
+}
+
+@media (max-width: 360px) {
+    .track-container {
+        padding: 8px;
+        gap: 8px;
+    }
+
+    .track-card {
+        height: 90px;
+        min-height: 90px;
+        padding: 8px 10px;
+    }
+
+    .track-artwork,
+    .track-card .track-artwork {
+        width: 50px;
+        height: 50px;
+        min-width: 50px;
+        margin-right: 8px;
+    }
+
+    .track-artwork-secondary {
+        display: none;
+    }
+
+    .track-info {
+        max-width: calc(100% - 100px);
+    }
+
+    .track-info h3 {
+        font-size: 0.85rem;
+    }
+
+    .track-info p {
+        font-size: 0.7rem;
+        -webkit-line-clamp: 1;
+        max-height: 1.5em;
+    }
+
+    .play-track-btn {
+        width: 28px !important;
+        height: 28px !important;
+    }
+
+    .play-track-btn i {
+        font-size: 10px;
+    }
+}
+
+@media (hover: none) {
+    .track-card:hover {
+        transform: none;
+        border: none;
+    }
+
+    .play-track-btn:hover {
+        border-color: #F5F5DC !important;
+        transform: none;
+    }
+
+    .play-track-btn:hover i {
+        color: #F5F5DC;
+    }
+
+    .track-card button:hover {
+        background-color: #F5F5DC;
+        opacity: 1;
+    }
+
+    .track-card:active {
+        transform: scale(0.98);
+        border: 1px solid #fc4242;
+    }
+
+    .play-track-btn:active {
+        border-color: #fc4242 !important;
+    }
+
+    .play-track-btn:active i {
+        color: #fc4242;
+    }
+
+    .track-card button:active {
+        background-color: #fc4242;
+        opacity: 1;
+    }
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .track-card:hover {
+        transform: scale(1.02);
+        border: 1px solid #fc4242;
+    }
+
+    .play-track-btn:hover {
+        border-color: #fc4242 !important;
+    }
+
+    .play-track-btn:hover i {
+        color: #fc4242;
+    }
+
+    .track-card button:hover {
+        background-color: #fc4242;
+        opacity: 1;
+    }
+}
+
+@media (min-width: 1200px) {
+    .track-container {
+        max-width: 1190px;
+        max-height: calc(100vh - 180px);
+        padding: 25px;
+    }
+    
+    .track-card {
+        height: 140px;
+        min-height: 140px;
+        padding: 15px 25px;
+    }
+    
+    .track-artwork {
+        min-width: calc(var(--track-artwork-size) + 10px);
+        width: calc(var(--track-artwork-size) + 10px);
+        height: calc(var(--track-artwork-size) + 10px);
+        margin-right: 20px;
+    }
+    
+    .track-info {
+        max-width: calc(100% - 250px);
+        margin-left: 0;
+        flex-grow: 1;
+    }
+    
+    .track-info h3 {
+        font-size: 1.4rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    
+    .track-info p {
+        font-size: 1rem;
+        max-height: 3em;
+        overflow: hidden;
+    }
+    
+    .track-buttons {
+        margin-left: auto;
+        margin-right: 15px;
+    }
+    
+    .play-track-btn {
+        width: 50px !important;
+        height: 50px !important;
+    }
+    
+    .play-track-btn i {
+        font-size: 18px;
+    }
+}
+
+@media (min-height: 900px) {
+    .track-container {
+        max-height: calc(100vh - 250px);
+        margin-bottom: 100px;
+    }
+}
+
+/* Add animation to the global player artwork */
+#global-audio-player .track-artwork.spinning {
+    animation: spin 3s linear infinite !important;
+}
+
+#global-audio-player .track-artwork.paused {
+    animation-play-state: paused !important;
+}
+
+.last-track-spacer {
+    min-height: 120px;  /* Adjust this value to control the amount of space */
+    width: 100%;
+    flex-shrink: 0;  /* Prevents the spacer from shrinking */
+}
+

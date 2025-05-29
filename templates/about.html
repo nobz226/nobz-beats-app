@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="hero-section">
+    <div class="title-container">
+        <h1 class="text-title"><span class="word">About</span></h1>
+        <p class="subtitle">Welcome to Nobz-Beats, my beats and production tools hub</p>
+    </div>
+</div>
+
+<div class="about-container content-section">
+    <!-- Mission section moved to the beginning -->
+    <div class="feature-card mission-card">
+        <div class="mission-content">
+            <div class="profile-image-container">
+                <img src="{{ url_for('static', filename='images/edd.png') }}" alt="Eddie (Nobz)" class="profile-image">
+            </div>
+            <div class="mission-text">
+                <h3>Mission</h3>
+                <p>My goal is to provide both tools and inspiration for music creators while sharing my own musical journey through beats and remixes. Whether you're a beginner looking to learn production, a DJ needing quick audio tools, or just someone who loves music, I hope you find something here to help enhance your musical experience.</p>
+                <p class="signature">- Eddie (Nobz)</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="feature-card">
+        <h3>Beats and Remixes</h3>
+        <p>Explore my collection of original beats and remixes. Each track represents a unique blend of styles and influences, available for streaming directly on the platform.</p>
+    </div>
+
+    <div class="feature-card">
+        <h3>Audio Tools</h3>
+        
+        <div class="tools-grid">
+            <div class="tool-item">
+                <div class="tool-icon"><i class="fas fa-layer-group"></i></div>
+                <h4>Stem Separator</h4>
+                <p>Split any song into its core components. Isolate vocals from instrumentals, extract drum tracks, separate bass lines, and pull out melodies and other elements.</p>
+                <p class="section-description">Perfect for remixing, sampling, or learning how songs are constructed.</p>
+            </div>
+
+            <div class="tool-item">
+                <div class="tool-icon"><i class="fas fa-wave-square"></i></div>
+                <h4>Audio Analyzer</h4>
+                <p>Get instant insights about your music. Detect BPM (tempo) and identify musical key to help with your production workflow.</p>
+                <p class="section-description">Perfect for DJs and producers needing quick track analysis.</p>
+            </div>
+
+            <div class="tool-item">
+                <div class="tool-icon"><i class="fas fa-exchange-alt"></i></div>
+                <h4>Audio Converter</h4>
+                <p>Convert your audio files between popular formats: MP3, WAV, and FLAC, providing flexibility for your audio needs.</p>
+                <p class="section-description">Supporting high-quality audio conversion for your production needs.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="feature-card">
+        <h3>Production Resources</h3>
+        <div class="tool-item">
+            <div class="tool-icon"><i class="fas fa-robot"></i></div>
+            <h4>Beat-Making Guide AI</h4>
+            <p>Get assistance with music production basics, DAW usage, mixing techniques, music theory, and hip-hop beat creation. My AI friend Alex is here to guide you.</p>
+        </div>
+    </div>
+</div>
+
+<div class="tools-section alternate-section">
+    <!-- All existing tools section content remains exactly the same -->
+</div>
+
+<div class="contact-section content-section">
+    <!-- All existing contact section content remains exactly the same -->
+</div>
+
+<!-- Add bottom spacer -->
+<div class="about-bottom-spacer"></div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Add animation to feature cards
+        const featureCards = document.querySelectorAll('.feature-card');
+        featureCards.forEach((card, index) => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            
+            setTimeout(() => {
+                card.style.transition = 'all 0.5s ease';
+                card.style.opacity = '1';
+                card.style.transform = 'translateY(0)';
+            }, 300 + (100 * index));
+        });
+        
+        // Add animation to tool items
+        const toolItems = document.querySelectorAll('.tool-item');
+        toolItems.forEach((item, index) => {
+            item.style.opacity = '0';
+            item.style.transform = 'translateY(20px)';
+            
+            setTimeout(() => {
+                item.style.transition = 'all 0.5s ease';
+                item.style.opacity = '1';
+                item.style.transform = 'translateY(0)';
+            }, 600 + (100 * index));
+        });
+    });
+</script>
+{% endblock %}
+
+
+
+
+

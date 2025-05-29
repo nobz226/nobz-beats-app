@@ -1,0 +1,342 @@
+/* Admin Page Styles */
+.admin-container {
+    display: flex;
+    gap: 12px;
+    font-family: var(--font-body);
+    padding-bottom: 120px;
+    min-height: 80vh;
+}
+
+/* Track List Styles */
+.track-management {
+    flex-grow: 1;
+    background-color: #181818;
+    border-radius: 10px;
+    box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.3);
+    padding: 16px;
+    width: 45%;
+}
+
+.track-actions {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.track-actions button {
+    padding: 4px 8px;
+    font-size: var(--font-size-xs);
+    font-family: var(--font-primary);
+    font-weight: var(--weight-medium);
+    color: #000000;
+    background-color: #F5F5DC;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: opacity 0.3s ease;
+}
+
+.track-actions button:hover {
+    background-color: #fc4242;
+    opacity: 1;
+}
+
+.admin-track-list {
+    font-family: var(--font-body);
+    background-color: #000000;
+    border-radius: 6px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    padding: 12px;
+    margin-top: 12px;
+    max-height: 70vh;
+    overflow-y: auto;
+}
+
+.admin-track-item {
+    display: flex;
+    align-items: center;
+    padding: 6px 0;
+    border-bottom: 1px solid rgba(245, 245, 220, 0.1);
+    font-size: 12px;
+}
+
+.admin-track-item .admin-track-artwork-small {
+    width: var(--admin-artwork-size);
+    height: var(--admin-artwork-size);
+    border-radius: 5px;
+    overflow: hidden;
+    margin-right: 10px;
+}
+
+.admin-track-item .admin-track-artwork-small img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.admin-track-item .admin-track-artwork-secondary-small {
+    width: var(--admin-artwork-size);
+    height: var(--admin-artwork-size);
+    border-radius: 5px;
+    overflow: hidden;
+    margin-right: 10px;
+}
+
+.admin-track-item .admin-track-artwork-secondary-small img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.admin-track-item .track-title {
+    font-family: var(--font-primary);
+    font-weight: var(--weight-semibold);
+    font-size: var(--font-size-sm);
+    color: #F5F5DC;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    flex-grow: 1;
+}
+
+.admin-track-item .track-select {
+    margin-right: 10px;
+}
+
+/* Forms Styles */
+.forms-section {
+    display: flex;
+    gap: 12px;
+    flex-grow: 1;
+    width: 60%;
+}
+
+.admin-form {
+    background-color: #1c1c1c;
+    padding: 12px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    flex-basis: 50%;
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+}
+
+.admin-form h2, .admin-form h4 {
+    font-family: var(--font-primary);
+    color: #F5F5DC;
+    font-size: var(--font-size-md);
+    font-weight: var(--weight-semibold);
+    margin-bottom: 8px;
+}
+
+.admin-form label {
+    display: block;
+    font-family: var(--font-secondary);
+    font-size: var(--font-size-sm);
+    font-weight: var(--weight-medium);
+    color: rgba(245, 245, 220, 0.9);
+    margin-bottom: 3px;
+}
+
+.admin-form input,
+.admin-form textarea {
+    width: 100%;
+    padding: 4px 6px;
+    font-size: 12px;
+    border: 1px solid rgba(245, 245, 220, 0.3);
+    border-radius: 4px;
+    background-color: #121212;
+    color: #F5F5DC;
+    margin-bottom: 6px;
+}
+
+.admin-form textarea {
+    height: 60px;
+    resize: vertical;
+}
+
+.admin-form button {
+    width: 100%;
+    padding: 6px;
+    font-size: 12px;
+    background-color: #F5F5DC;
+    color: #000000;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: opacity 0.3s ease;
+    margin-top: 6px;
+}
+
+.admin-form button:hover {
+    background-color: #fc4242;
+    opacity: 1;
+}
+
+.form-group {
+    margin-bottom: 8px;
+}
+
+/* Media Queries */
+@media (max-width: 768px) {
+    .admin-container {
+        flex-direction: column;
+    }
+
+    .track-management,
+    .forms-section {
+        width: 100%;
+    }
+
+    .forms-section {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .admin-form {
+        width: 100%;
+        padding: 15px;
+        margin: 5px 0;
+    }
+
+    .admin-form input,
+    .admin-form textarea {
+        font-size: 14px;
+        padding: 8px;
+        margin-bottom: 8px;
+    }
+
+    .admin-form button {
+        font-size: 14px;
+        padding: 8px;
+    }
+
+    .admin-form h2,
+    .admin-form h4 {
+        font-size: 16px;
+        margin-bottom: 12px;
+    }
+
+    .admin-form label {
+        font-size: 14px;
+        margin-bottom: 4px;
+    }
+
+    /* Adjust track list for mobile */
+    .admin-track-list {
+        max-height: 40vh;
+    }
+}
+
+/* Extra small devices */
+@media (max-width: 480px) {
+    .admin-form {
+        padding: 12px;
+    }
+
+    .admin-form input,
+    .admin-form textarea {
+        font-size: 13px;
+        padding: 6px;
+    }
+}
+
+.admin-track-artwork-small,
+.admin-track-artwork-secondary-small {
+    position: relative;
+    width: 50px;
+    height: 50px;
+    overflow: hidden;
+    border-radius: 5px;
+    margin-right: 10px;
+}
+
+.admin-track-artwork-small img,
+.admin-track-artwork-secondary-small img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.remove-artwork-btn {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 20px;
+    height: 20px;
+    background-color: rgba(0, 0, 0, 0.7);
+    color: #ffffff;
+    border: none;
+    border-radius: 0 0 0 5px;
+    font-size: 16px;
+    line-height: 1;
+    padding: 0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.7;
+    transition: opacity 0.3s ease;
+}
+
+.remove-artwork-btn:hover {
+    opacity: 1;
+    background-color: #fc4242;
+}
+
+.track-stats {
+    display: flex;
+    gap: 15px;
+    margin-left: 15px;
+}
+
+.track-likes, .track-unlikes {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.9rem;
+}
+
+.stat-label {
+    color: #F5F5DC;
+    font-weight: bold;
+}
+
+.stat-value {
+    color: #F5F5DC;
+    min-width: 20px;
+    text-align: center;
+}
+
+.clear-likes-btn, .clear-unlikes-btn {
+    background-color: rgba(252, 66, 66, 0.1);
+    color: #F5F5DC;
+    border: 1px solid rgba(252, 66, 66, 0.3);
+    border-radius: 4px;
+    padding: 2px 8px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.clear-likes-btn:hover, .clear-unlikes-btn:hover {
+    background-color: rgba(252, 66, 66, 0.3);
+    color: white;
+}
+
+@media (max-width: 768px) {
+    .track-stats {
+        flex-direction: column;
+        gap: 5px;
+        margin-left: 10px;
+    }
+    
+    .track-likes, .track-unlikes {
+        font-size: 0.8rem;
+    }
+    
+    .clear-likes-btn, .clear-unlikes-btn {
+        padding: 1px 6px;
+        font-size: 0.7rem;
+    }
+}

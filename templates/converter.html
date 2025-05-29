@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% from 'components/hero.html' import hero %}
+
+{% block content %}
+<div class="hero-section">
+    <div class="title-container">
+        <h1 class="text-title"><span class="word">Audio</span> <span class="word">Converter</span></h1>
+        <p class="subtitle">Convert your audio files to any format</p>
+    </div>
+</div>
+
+<div class="converter-container content-section">
+    <div class="converter-form">
+        <div class="notice">
+            <i class="fas fa-info-circle"></i>
+            Convert audio files between formats
+        </div>
+        
+        <div class="file-drop-area">
+            <input type="file" id="audio-file" accept=".mp3,.wav,.flac" class="file-input">
+            <div class="file-icon">
+                <i class="fas fa-cloud-upload-alt"></i>
+            </div>
+            <div class="file-msg">Drag & drop audio file or click to select</div>
+            <div class="file-name"></div>
+        </div>
+
+        <div class="format-selector">
+            <label>Convert to:</label>
+            <div class="format-options">
+                <button type="button" class="format-btn" data-format="mp3">MP3</button>
+                <button type="button" class="format-btn" data-format="wav">WAV</button>
+                <button type="button" class="format-btn" data-format="flac">FLAC</button>
+            </div>
+        </div>
+
+        <button id="convert-btn" disabled>
+            <span class="btn-text">Convert</span>
+            <i class="fas fa-exchange-alt"></i>
+        </button>
+
+        <div class="conversion-status" style="display: none;">
+            <div class="converter-progress-container">
+                <div class="converter-progress"></div>
+            </div>
+            <div class="converter-status-text"></div>
+        </div>
+
+        <div class="download-section" style="display: none;">
+            <a href="#" class="download-btn">
+                <i class="fas fa-download"></i>
+                <span>Download Converted File</span>
+            </a>
+        </div>
+    </div>
+</div>
+<div style="height: 200px;"></div>  <!-- Added spacer -->
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/converter.css') }}">
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/converter.js') }}"></script>
+{% endblock %}

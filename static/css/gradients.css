@@ -1,0 +1,36 @@
+/* Common gradient styles for content sections */
+.content-section {
+    position: relative;
+    overflow: hidden;
+    color: #fff; /* Ensure text is visible */
+    background: linear-gradient(
+        135deg,
+        #0a0a0a 0%,
+        #1a1a1a 50%,
+        rgba(252, 66, 66, 0.05) 100%
+    );
+}
+
+/* Keep all other gradient styles unchanged */
+.alternate-section {
+    position: relative;
+    overflow: hidden;
+    color: #fff; /* Ensure text is visible */
+    background: linear-gradient(
+        135deg,
+        rgba(252, 66, 66, 0.05) 0%,
+        #1a1a1a 50%,
+        #0a0a0a 100%
+    );
+}
+
+.footer-section {
+    position: relative;
+    color: #fff; /* Ensure text is visible */
+    background: linear-gradient(
+        135deg,
+        #0a0a0a 0%,
+        rgba(252, 66, 66, 0.02) 50%,
+        #0a0a0a 100%
+    );
+}

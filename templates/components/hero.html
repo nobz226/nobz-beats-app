@@ -1,0 +1,10 @@
+{% macro hero(title, subtitle) %}
+<div class="hero-section">
+    <div class="hero-content">
+        <h1 class="hero-title"><span class="word">{{ title.split(' ')[0] }}</span> <span class="word">{{ title.split(' ')[1] if title.split(' ')|length > 1 else '' }}</span></h1>
+        {% if subtitle %}
+        <p class="hero-subtitle">{{ subtitle }}</p>
+        {% endif %}
+    </div>
+</div>
+{% endmacro %}

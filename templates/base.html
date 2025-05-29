@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Explore hip-hop instrumentals and remixes created by Nobz.">
+    <meta name="keywords" content="Beats and Remixes">
+    <meta name="author" content="Nobz">
+    <title>Nobz-Beats</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/typography.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/hero.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/navigation.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/track-display.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/audio-player.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/page-specific.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/converter.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/guides.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/analyzer.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/separator.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/youtube.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/crt-effect.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/gradients.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+        }
+        
+        main {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            min-height: calc(100vh - 80px);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* Subtitle animation for all pages */
+        .subtitle, h2:not(.section-title) {
+            font-family: var(--font-primary);
+            font-size: var(--font-size-md);
+            color: #fc4242;
+            margin-top: 0.5rem;
+            text-align: center;
+            opacity: 0;
+            /* Calculate total animation time: 
+               1s initial delay + (avg 10 chars * 0.15s per char) + 1s buffer = ~3.5s */
+            animation: fadeIn 2s forwards 3.5s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        /* Ensure toggle button is visible immediately without waiting for JS */
+        .global-toggle-btn {
+            display: flex !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            z-index: 951 !important;
+            background: rgba(252, 66, 66, 0.2) !important;
+            border: 1px solid rgba(252, 66, 66, 0.5) !important;
+        }
+        
+        /* Mobile specific styling for the toggle button - move higher up */
+        @media (max-width: 768px) {
+            .global-toggle-btn {
+                bottom: 70px !important; /* Move higher up from the bottom */
+                right: 15px !important; /* Keep it on the right side */
+                position: fixed !important;
+                z-index: 951 !important;
+                visibility: visible !important;
+                opacity: 1 !important;
+            }
+            
+            /* When player is hidden or inactive, position the toggle at the bottom center */
+            #global-audio-player.hidden ~ .global-toggle-btn,
+            #global-audio-player:not(.active) ~ .global-toggle-btn {
+                bottom: 0 !important;
+                left: 50% !important;
+                transform: translateX(-50%) !important;
+            }
+        }
+        
+        /* Additional styles for smaller mobile screens */
+        @media (max-width: 480px) {
+            .global-toggle-btn {
+                bottom: 90px !important; /* Move even higher for smaller screens */
+                right: 15px !important;
+            }
+            
+            /* When player is hidden or inactive, position the toggle at the bottom center */
+            #global-audio-player.hidden ~ .global-toggle-btn,
+            #global-audio-player:not(.active) ~ .global-toggle-btn {
+                bottom: 0 !important;
+                left: 50% !important;
+                transform: translateX(-50%) !important;
+            }
+        }
+        
+        /* Footer Styling */
+        .footer-info {
+            background: linear-gradient(
+                135deg,
+                #0a0a0a 0%,
+                rgba(252, 66, 66, 0.02) 50%,
+                #0a0a0a 100%
+            );
+            padding: 2rem;
+            position: relative;
+            margin-bottom: 0; /* Ensure no margin below footer */
+            margin-top: 0; /* Remove space between content and footer */
+            width: 100%;
+            text-align: center;
+        }
+        
+        .footer-info h3 {
+            color: #ffffff;
+            margin-bottom: 0.5rem;
+            font-size: 1.3rem;
+        }
+        
+        .footer-info p {
+            color: #cccccc;
+            font-size: 1rem;
+        }
+        
+        /* Style for content inside main to keep padding */
+        .content-wrapper {
+            padding: 0; /* Removed all padding */
+            flex: 1;
+        }
+    </style>
+
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body>
+    <!-- Preloader -->
+    <div id="preloader">
+        <div class="loader">
+            <svg class="vinyl-loader" viewBox="0 0 100 100">
+                <circle class="vinyl-outer" cx="50" cy="50" r="45"></circle>
+                <circle class="vinyl-inner" cx="50" cy="50" r="20"></circle>
+                <circle class="vinyl-center" cx="50" cy="50" r="5"></circle>
+            </svg>
+            <div class="loading-text">Loading<span>.</span><span>.</span><span>.</span></div>
+        </div>
+    </div>
+
+    <!-- Player toggle button positioned outside the player for always-visible state -->
+    <button class="global-toggle-btn" title="Show Player"><i class="fas fa-chevron-up"></i></button>
+
+    <div id="global-audio-player">
+        <div class="global-player-controls">
+            <button class="global-prev-btn" title="Previous Track"><i class="fas fa-step-backward"></i></button>
+            <button class="global-play-btn" title="Play/Pause"><i class="fas fa-play"></i></button>
+            <button class="global-stop-btn" title="Stop"><i class="fas fa-stop"></i></button>
+            <button class="global-restart-btn" title="Restart"><i class="fas fa-redo-alt"></i></button>
+            <button class="global-repeat-btn" title="Repeat"><i class="fas fa-sync-alt"></i></button>
+            <button class="global-next-btn" title="Next Track"><i class="fas fa-step-forward"></i></button>
+        </div>
+        
+        <div class="global-player-info">
+            <div class="artwork-container">
+                <img class="track-artwork" src="" alt="" style="display: none; width: 100%; height: 100%; object-fit: contain; border-radius: 50%; margin: 0; padding: 0;">
+                <div class="artwork-placeholder">
+                    <i class="fas fa-music"></i>
+                </div>
+            </div>
+            <div class="track-details">
+                <div class="track-name">No track selected</div>
+                <div class="progress-container">
+                    <div class="visualizer-container" id="audio-visualizer">
+                        <!-- Visualizer bars will be added dynamically via JavaScript -->
+                    </div>
+                    <div class="progress-bar"></div>
+                    <div class="progress-hover-time">0:00</div>
+                </div>
+                <div class="time-info">
+                    <span class="current-time">0:00</span>
+                    <span class="total-time">0:00</span>
+                </div>
+            </div>
+        </div>
+    
+        <audio id="global-audio">
+            <source src="" type="audio/mpeg">
+            Your browser does not support the audio element.
+        </audio>
+    </div>
+    
+    <!-- Three-line Menu Toggle with Animation -->
+    <div class="menu-toggle" onclick="toggleMenu()">
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>
+
+    <!-- Dropdown Menu with Enhanced Animation -->
+    <div id="menuDropdown" class="menu-dropdown">
+        <div class="menu-header">
+            <div class="logo-container">
+                <span class="logo-text">Nobz Beats</span>
+            </div>
+        </div>
+        <a href="{{ url_for('index') }}" class="menu-item"><i class="fas fa-home"></i>Home</a>
+        <a href="{{ url_for('about') }}" class="menu-item"><i class="fas fa-info-circle"></i>About</a>
+        <a href="{{ url_for('showcase') }}" class="menu-item"><i class="fas fa-music"></i>Beats and Remixes</a>
+        <a href="{{ url_for('guides') }}" class="menu-item"><i class="fas fa-book"></i>Learn to make Beats</a>
+        <a href="{{ url_for('audio.stem_separator') }}" class="menu-item"><i class="fas fa-layer-group"></i>Stem Separator</a>
+        <a href="{{ url_for('audio.converter') }}" class="menu-item"><i class="fas fa-exchange-alt"></i>Audio Converter</a>
+        <a href="{{ url_for('audio.analyze_audio') }}" class="menu-item"><i class="fas fa-wave-square"></i>Audio Analyzer</a>
+        <a href="{{ url_for('youtube_converter') }}" class="menu-item"><i class="fab fa-youtube"></i>Youtube to Audio</a>
+        {% if current_user.is_authenticated and current_user.is_admin %}
+            <a href="{{ url_for('admin_panel') }}" class="menu-item"><i class="fas fa-user-shield"></i>Admin Panel</a>
+            <a href="{{ url_for('logout') }}" class="menu-item"><i class="fas fa-sign-out-alt"></i>Logout</a>
+        {% endif %}
+        <div class="menu-footer">
+            <div class="social-icons">
+                <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
+                <a href="https://soundcloud.com/user-621182531" class="social-icon" target="_blank"><i class="fab fa-soundcloud"></i></a>
+                <a href="https://www.youtube.com/@nobz_beats7894" class="social-icon" target="_blank"><i class="fab fa-youtube"></i></a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Flash Messages with Animation -->
+    <div class="messages">
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <ul>
+                {% for message in messages %}
+                    <li class="message-item">{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+        {% endwith %}
+    </div>
+
+    <!-- Main Content -->
+    <div id="main-content">
+        <main>
+            <!-- Added content wrapper div -->
+            <div class="content-wrapper">
+                {% block content %}{% endblock %}
+            </div>
+            
+            <!-- Global Footer added here -->
+            <div class="footer-info">
+                <h3>Nobz 2024</h3>
+                <p>Beats, Remixes and Audio Tools</p>
+            </div>
+        </main>
+    </div>
+
+    <!-- Core Scripts -->
+    <script src="{{ url_for('static', filename='js/player.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/menu.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/admin.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/converter.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/guides.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/analyzer.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/separator.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/youtube.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/title-animation.js') }}"></script>
+
+    <script>
+        // Make toggle button visible immediately before any scripts run
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log("DOMContentLoaded fired - page is loading");
+            
+            // Make toggle button visible immediately
+            const initialToggleBtn = document.querySelector('.global-toggle-btn');
+            if (initialToggleBtn) {
+                initialToggleBtn.style.display = 'flex';
+                initialToggleBtn.style.visibility = 'visible';
+                initialToggleBtn.style.opacity = '1';
+                
+                // Force correct positioning based on player state
+                const audioPlayer = document.getElementById('global-audio-player');
+                if (audioPlayer.classList.contains('active') && !audioPlayer.classList.contains('hidden')) {
+                    // Responsive positioning
+                    if (window.innerWidth <= 480) {
+                        initialToggleBtn.style.left = 'calc(100% - 60px)';
+                        initialToggleBtn.style.bottom = '60px';
+                    } else if (window.innerWidth <= 768) {
+                        initialToggleBtn.style.left = 'calc(100% - 80px)';
+                        initialToggleBtn.style.bottom = '70px';
+                    } else {
+                        initialToggleBtn.style.left = 'calc(100% - 100px)';
+                        initialToggleBtn.style.bottom = '90px';
+                    }
+                    initialToggleBtn.style.transform = 'translateX(0)';
+                } else {
+                    initialToggleBtn.style.bottom = '0';
+                    initialToggleBtn.style.left = '50%';
+                    initialToggleBtn.style.transform = 'translateX(-50%)';
+                }
+            }
+            
+            // Add a basic fallback if anything fails
+            setTimeout(function() {
+                if (document.body.style.display === 'none' || document.body.innerHTML === '') {
+                    console.log("Emergency fix: forcing body to display");
+                    document.body.style.display = 'block';
+                }
+                
+                // Double check toggle button visibility
+                const fallbackToggleBtn = document.querySelector('.global-toggle-btn');
+                if (fallbackToggleBtn) {
+                    fallbackToggleBtn.style.display = 'flex';
+                    fallbackToggleBtn.style.visibility = 'visible';
+                    fallbackToggleBtn.style.opacity = '1';
+                }
+            }, 2000);
+            
+            setTimeout(function() {
+                document.getElementById('preloader').style.opacity = '0';
+                setTimeout(function() {
+                    document.getElementById('preloader').style.display = 'none';
+                }, 500);
+            }, 800);
+            
+            // Always make sure the toggle button is visible
+            const mainToggleBtn = document.querySelector('.global-toggle-btn');
+            if (mainToggleBtn) {
+                mainToggleBtn.style.display = 'flex';
+                mainToggleBtn.style.visibility = 'visible';
+                mainToggleBtn.style.opacity = '1';
+                
+                // Force correct positioning based on player state
+                const audioPlayer = document.getElementById('global-audio-player');
+                if (audioPlayer.classList.contains('active') && !audioPlayer.classList.contains('hidden')) {
+                    // Responsive positioning
+                    if (window.innerWidth <= 480) {
+                        mainToggleBtn.style.left = 'calc(100% - 60px)';
+                        mainToggleBtn.style.bottom = '60px';
+                    } else if (window.innerWidth <= 768) {
+                        mainToggleBtn.style.left = 'calc(100% - 80px)';
+                        mainToggleBtn.style.bottom = '70px';
+                    } else {
+                        mainToggleBtn.style.left = 'calc(100% - 100px)';
+                        mainToggleBtn.style.bottom = '90px';
+                    }
+                    mainToggleBtn.style.transform = 'translateX(0)';
+                } else {
+                    mainToggleBtn.style.bottom = '0';
+                    mainToggleBtn.style.left = '50%';
+                    mainToggleBtn.style.transform = 'translateX(-50%)';
+                }
+            }
+            
+            // Check if there's a saved audio state and show the player if needed
+            const savedState = sessionStorage.getItem("audioState");
+            if (savedState) {
+                const state = JSON.parse(savedState);
+                if (state.src) {
+                    document.getElementById('global-audio-player').classList.add('active');
+                    
+                    // Apply hidden state if it exists in the saved state
+                    if (state.isPlayerHidden) {
+                        document.getElementById('global-audio-player').classList.add('hidden');
+                    } else {
+                        document.getElementById('global-audio-player').classList.remove('hidden');
+                    }
+                }
+            }
+            
+            // Force check for audio player visibility after a short delay
+            setTimeout(function() {
+                const audioPlayer = document.getElementById('global-audio-player');
+                const globalAudio = document.getElementById('global-audio');
+                const delayedToggleBtn = document.querySelector('.global-toggle-btn');
+                
+                // Always make the toggle button visible
+                if (delayedToggleBtn) {
+                    delayedToggleBtn.style.display = 'flex';
+                    
+                    // Force correct positioning based on player state
+                    if (audioPlayer.classList.contains('active') && !audioPlayer.classList.contains('hidden')) {
+                        // Responsive positioning
+                        if (window.innerWidth <= 480) {
+                            delayedToggleBtn.style.left = 'calc(100% - 60px)';
+                            delayedToggleBtn.style.bottom = '60px';
+                        } else if (window.innerWidth <= 768) {
+                            delayedToggleBtn.style.left = 'calc(100% - 80px)';
+                            delayedToggleBtn.style.bottom = '70px';
+                        } else {
+                            delayedToggleBtn.style.left = 'calc(100% - 100px)';
+                            delayedToggleBtn.style.bottom = '90px';
+                        }
+                        delayedToggleBtn.style.transform = 'translateX(0)';
+                    } else {
+                        delayedToggleBtn.style.bottom = '0';
+                        delayedToggleBtn.style.left = '50%';
+                        delayedToggleBtn.style.transform = 'translateX(-50%)';
+                    }
+                }
+                
+                if (globalAudio && globalAudio.src && globalAudio.src !== window.location.href) {
+                    audioPlayer.classList.add('active');
+                    
+                    // By default, start with the player hidden
+                    if (!sessionStorage.getItem("audioState")) {
+                        audioPlayer.classList.add('hidden');
+                    }
+                    
+                    console.log("Forcing audio player visibility");
+                }
+            }, 1000);
+            
+            // Add event listener for toggle button
+            const btnWithListener = document.querySelector('.global-toggle-btn');
+            if (btnWithListener) {
+                btnWithListener.addEventListener('click', function() {
+                    const audioPlayer = document.getElementById('global-audio-player');
+                    
+                    // Update button position after a short delay to allow for transitions
+                    setTimeout(function() {
+                        if (audioPlayer.classList.contains('active') && !audioPlayer.classList.contains('hidden')) {
+                            btnWithListener.style.bottom = '90px';
+                            
+                            // Responsive positioning
+                            if (window.innerWidth <= 480) {
+                                btnWithListener.style.left = 'calc(100% - 60px)';
+                                btnWithListener.style.bottom = '60px';
+                            } else if (window.innerWidth <= 768) {
+                                btnWithListener.style.left = 'calc(100% - 80px)';
+                                btnWithListener.style.bottom = '70px';
+                            } else {
+                                btnWithListener.style.left = 'calc(100% - 100px)';
+                            }
+                            
+                            btnWithListener.style.transform = 'translateX(0)';
+                        } else {
+                            btnWithListener.style.bottom = '0';
+                            btnWithListener.style.left = '50%';
+                            btnWithListener.style.transform = 'translateX(-50%)';
+                        }
+                    }, 50);
+                });
+            }
+            
+            // Function to update button position based on screen size
+            function updateButtonPosition() {
+                const toggleBtn = document.querySelector('.global-toggle-btn');
+                const audioPlayer = document.getElementById('global-audio-player');
+                
+                if (toggleBtn && audioPlayer.classList.contains('active') && !audioPlayer.classList.contains('hidden')) {
+                    if (window.innerWidth <= 480) {
+                        toggleBtn.style.left = 'calc(100% - 60px)';
+                        toggleBtn.style.bottom = '60px';
+                    } else if (window.innerWidth <= 768) {
+                        toggleBtn.style.left = 'calc(100% - 80px)';
+                        toggleBtn.style.bottom = '70px';
+                    } else {
+                        toggleBtn.style.left = 'calc(100% - 100px)';
+                        toggleBtn.style.bottom = '90px';
+                    }
+                    toggleBtn.style.transform = 'translateX(0)';
+                }
+            }
+            
+            // Listen for window resize events
+            window.addEventListener('resize', updateButtonPosition);
+            
+            // Initial call to set correct position
+            updateButtonPosition();
+        });
+        
+        // Progress bar hover effect
+        const progressContainer = document.querySelector('.progress-container');
+        const progressHoverTime = document.querySelector('.progress-hover-time');
+        
+        if (progressContainer && progressHoverTime) {
+            progressContainer.addEventListener('mousemove', function(e) {
+                const rect = this.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const width = rect.width;
+                const percentage = x / width;
+                
+                // Position the hover time display
+                progressHoverTime.style.left = `${x}px`;
+                progressHoverTime.style.opacity = '1';
+                
+                // Calculate and display the time
+                const audio = document.getElementById('global-audio');
+                if (audio && audio.duration) {
+                    const time = audio.duration * percentage;
+                    const minutes = Math.floor(time / 60);
+                    const seconds = Math.floor(time % 60).toString().padStart(2, '0');
+                    progressHoverTime.textContent = `${minutes}:${seconds}`;
+                }
+            });
+            
+            progressContainer.addEventListener('mouseleave', function() {
+                progressHoverTime.style.opacity = '0';
+            });
+        }
+        
+        // Add active class to current menu item
+        document.addEventListener('DOMContentLoaded', function() {
+            const currentPath = window.location.pathname;
+            const menuItems = document.querySelectorAll('.menu-item');
+            
+            menuItems.forEach(item => {
+                const href = item.getAttribute('href');
+                if (href === currentPath) {
+                    item.classList.add('active');
+                }
+            });
+        });
+    </script>
+
+    <!-- CRT Effect JavaScript -->
+    <script src="{{ url_for('static', filename='js/crt-effect.js') }}"></script>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

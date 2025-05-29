@@ -1,0 +1,361 @@
+/* Title styling - matching separator page */
+.title-container {
+    text-align: center;
+    margin-bottom: 2rem;
+    position: relative;
+}
+
+.text-title {
+    font-family: var(--font-primary);
+    font-size: var(--font-size-4xl);
+    font-weight: var(--weight-black);
+    background: linear-gradient(45deg, var(--primary-color), #ff8a8a);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    margin-bottom: 0.5rem;
+    position: relative;
+    display: inline-block;
+}
+
+.text-title .word {
+    display: inline-block;
+    animation: fadeInUp 0.8s cubic-bezier(0.215, 0.61, 0.355, 1) both;
+}
+
+.text-title .word:nth-child(1) {
+    animation-delay: 0.1s;
+}
+
+.text-title .word:nth-child(2) {
+    animation-delay: 0.3s;
+}
+
+.text-title::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 3px;
+    background: var(--primary-color);
+    border-radius: 3px;
+}
+
+h2 {
+    text-align: center;
+    font-family: var(--font-body);
+    font-size: var(--font-size-xl);
+    font-weight: var(--weight-regular);
+    color: rgba(255, 255, 255, 0.8);
+    margin-bottom: 3rem;
+    animation: fadeIn 1s ease both;
+    animation-delay: 0.5s;
+}
+
+/* Main container styling - matching separator page */
+.converter-container {
+    max-width: 900px;
+    margin: 1rem auto 0; /* Changed to 1rem */
+    padding: 2rem;
+    padding-bottom: 6rem;
+    background: rgba(20, 20, 20, 0.7);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    animation: fadeIn 1s ease both;
+    animation-delay: 0.7s;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.converter-form {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+/* File drop area styling - matching separator page */
+.file-drop-area {
+    border: 2px dashed rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    padding: 3rem 2rem;
+    text-align: center;
+    cursor: pointer;
+    position: relative;
+    background: rgba(255, 255, 255, 0.05);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.file-drop-area.drag-over {
+    border-color: var(--primary-color);
+    background: rgba(252, 66, 66, 0.05);
+    transform: scale(1.01);
+}
+
+.file-drop-area.file-dropped {
+    border-color: #4CAF50;
+    background: rgba(76, 175, 80, 0.05);
+}
+
+.file-drop-area.file-success {
+    border-color: #4CAF50;
+    background: rgba(76, 175, 80, 0.05);
+}
+
+.file-input {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 100%;
+    opacity: 0;
+    cursor: pointer;
+    z-index: 10;
+}
+
+.file-msg {
+    font-family: var(--font-body);
+    font-size: var(--font-size-md);
+    font-weight: var(--weight-regular);
+    color: rgba(255, 255, 255, 0.7);
+    margin-bottom: 1rem;
+    transition: all 0.3s ease;
+}
+
+.file-name {
+    font-family: var(--font-secondary);
+    font-size: var(--font-size-sm);
+    font-weight: var(--weight-medium);
+    color: var(--primary-color);
+    margin-top: 1rem;
+    word-break: break-all;
+}
+
+/* Format selector styling */
+.format-selector {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.format-selector label {
+    font-family: var(--font-primary);
+    font-size: var(--font-size-md);
+    font-weight: var(--weight-medium);
+    color: rgba(255, 255, 255, 0.9);
+    margin-bottom: 0.5rem;
+}
+
+.format-options {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: 1.5rem;
+}
+
+.format-btn {
+    padding: 0.8rem 1.5rem;
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid transparent;
+    border-radius: 8px;
+    color: rgba(255, 255, 255, 0.8);
+    font-family: var(--font-primary);
+    font-size: var(--font-size-base);
+    font-weight: var(--weight-medium);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    flex: 1;
+    min-width: 80px;
+    outline: none;
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+}
+
+.format-btn:hover {
+    background: rgba(252, 66, 66, 0.2);
+    color: #ffffff;
+    transform: translateY(-2px);
+}
+
+.format-btn.selected {
+    background: var(--primary-color);
+    color: #ffffff;
+    box-shadow: 0 4px 15px rgba(252, 66, 66, 0.3);
+    transform: translateY(-2px);
+    border-color: rgba(255, 255, 255, 0.5);
+}
+
+/* Convert button styling */
+#convert-btn {
+    padding: 1rem 2rem;
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-family: var(--font-primary);
+    font-size: var(--font-size-md);
+    font-weight: var(--weight-semibold);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    box-shadow: 0 4px 15px rgba(252, 66, 66, 0.3);
+}
+
+#convert-btn:disabled {
+    background: rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.4);
+    cursor: not-allowed;
+    box-shadow: none;
+    transform: none;
+}
+
+#convert-btn:not(:disabled):hover {
+    background: #ff5a5a;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(252, 66, 66, 0.4);
+}
+
+/* Conversion status styling */
+.conversion-status {
+    margin-top: 1rem;
+    text-align: center;
+}
+
+.converter-progress-container {
+    height: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 1rem;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.converter-progress {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary-color), #ff8a8a);
+    width: 0%;
+    border-radius: 4px;
+    transition: width 0.3s ease;
+}
+
+.converter-status-text {
+    font-family: var(--font-body);
+    font-size: var(--font-size-base);
+    font-weight: var(--weight-medium);
+    color: rgba(255, 255, 255, 0.8);
+    margin-top: 0.5rem;
+}
+
+/* Download section styling */
+.download-section {
+    text-align: center;
+    margin-top: 2rem;
+}
+
+.download-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem 2rem;
+    background: #4CAF50;
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+    font-weight: 600;
+    box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+}
+
+.download-btn:hover {
+    background: #5dbd61;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .converter-container {
+        padding: 1.5rem;
+        margin: 0 1rem;
+    }
+    
+    .file-drop-area {
+        padding: 2rem 1rem;
+    }
+    
+    .file-msg {
+        font-size: 1rem;
+    }
+    
+    .format-btn {
+        padding: 0.7rem 1.2rem;
+        font-size: 0.9rem;
+    }
+    
+    #convert-btn {
+        padding: 0.8rem 1.5rem;
+        font-size: 1rem;
+    }
+}
+
+/* Notice styling */
+.notice {
+    background: rgba(252, 66, 66, 0.1);
+    border-left: 3px solid var(--primary-color);
+    padding: 1rem;
+    border-radius: 5px;
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.8);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.notice i {
+    color: var(--primary-color);
+    font-size: 1.2rem;
+}
+
+/* File icon styling */
+.file-icon {
+    font-size: 2.5rem;
+    color: rgba(255, 255, 255, 0.5);
+    margin-bottom: 1rem;
+    transition: all 0.3s ease;
+}
+
+.file-drop-area:hover .file-icon {
+    color: var(--primary-color);
+    transform: translateY(-5px);
+}

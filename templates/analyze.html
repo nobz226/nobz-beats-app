@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% from 'components/hero.html' import hero %}
+
+{% block content %}
+<div class="hero-section">
+    <div class="title-container">
+        <h1 class="text-title"><span class="word">Audio</span> <span class="word">Analyzer</span></h1>
+        <p class="subtitle">Detect Key and Tempo Instantly</p>
+    </div>
+</div>
+
+<div class="analyzer-container content-section">
+    <div class="analyzer-form">
+        <div class="notice">
+            <i class="fas fa-info-circle"></i>
+            For best results, use high-quality audio files (any size)
+        </div>
+        
+        <div class="file-drop-area">
+            <input type="file" id="audio-file" accept=".mid,.midi,.xml,.mxl,.abc,.wav,.mp3,.flac" class="file-input">
+            <div class="file-icon">
+                <i class="fas fa-cloud-upload-alt"></i>
+            </div>
+            <div class="file-msg">Drag & drop audio file or click to select</div>
+            <div class="file-name"></div>
+        </div>
+
+        <button id="analyze-btn" disabled>Analyze</button>
+        
+        <div class="analysis-status" style="display: none;">
+            <div class="analyzer-progress-container">
+                <div class="analyzer-progress"></div>
+            </div>
+            <div class="analyzer-status-text"></div>
+        </div>
+    </div>
+</div>
+
+<div class="results-section alternate-section" style="display: none;">
+    <div class="results-container">
+        <div class="result-card">
+            <div class="result-icon">
+                <i class="fas fa-tachometer-alt"></i>
+            </div>
+            <h3>Tempo</h3>
+            <div class="result-value tempo-value">--</div>
+        </div>
+        <div class="result-card">
+            <div class="result-icon">
+                <i class="fas fa-music"></i>
+            </div>
+            <h3>Key</h3>
+            <div class="result-value key-value">--</div>
+        </div>
+    </div>
+</div>
+
+<div style="height: 200px;"></div>  <!-- Added spacer -->
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/analyzer.css') }}">
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/analyzer.js') }}"></script>
+{% endblock %}

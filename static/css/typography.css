@@ -1,0 +1,152 @@
+/* Typography System for Nobs Beats App */
+
+/* Font Imports */
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,600;0,700;1,600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400;1,500&display=swap');
+
+/* Typography Variables */
+:root {
+    /* Font Families */
+    --font-primary: 'Outfit', sans-serif;
+    --font-secondary: 'JetBrains Mono', monospace;
+    --font-accent: 'Fraunces', serif;
+    --font-body: 'DM Sans', sans-serif;
+    
+    /* Font Weights */
+    --weight-light: 300;
+    --weight-regular: 400;
+    --weight-medium: 500;
+    --weight-semibold: 600;
+    --weight-bold: 700;
+    --weight-extrabold: 800;
+    --weight-black: 900;
+    
+    /* Font Sizes */
+    --font-size-xs: 12px;
+    --font-size-sm: 14px;
+    --font-size-base: 16px;
+    --font-size-md: 18px;
+    --font-size-lg: 20px;
+    --font-size-xl: 24px;
+    --font-size-2xl: 28px;
+    --font-size-3xl: 32px;
+    --font-size-4xl: 36px;
+    
+    /* Line Heights */
+    --line-height-tight: 1.2;
+    --line-height-normal: 1.5;
+    --line-height-relaxed: 1.75;
+    
+    /* Letter Spacing */
+    --letter-spacing-tight: -0.025em;
+    --letter-spacing-normal: 0;
+    --letter-spacing-wide: 0.025em;
+    --letter-spacing-wider: 0.05em;
+}
+
+/* Base Typography Styles */
+body {
+    font-family: var(--font-body);
+    font-weight: var(--weight-regular);
+    font-size: var(--font-size-base);
+    line-height: var(--line-height-normal);
+    color: var(--text-color);
+}
+
+/* Headings */
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-primary);
+    font-weight: var(--weight-bold);
+    line-height: var(--line-height-tight);
+    margin-top: 0;
+    margin-bottom: 0.5em;
+}
+
+h1 {
+    font-size: var(--font-size-3xl);
+    letter-spacing: var(--letter-spacing-tight);
+}
+
+h2 {
+    font-size: var(--font-size-2xl);
+}
+
+h3 {
+    font-size: var(--font-size-xl);
+}
+
+h4 {
+    font-size: var(--font-size-lg);
+}
+
+/* Special Text Elements */
+.text-title {
+    font-family: var(--font-primary);
+    font-weight: var(--weight-black);
+    letter-spacing: var(--letter-spacing-tight);
+}
+
+.subtitle {
+    font-family: var(--font-body);
+    font-weight: var(--weight-medium);
+    font-size: var(--font-size-md);
+}
+
+.accent-text {
+    font-family: var(--font-accent);
+    font-weight: var(--weight-semibold);
+}
+
+/* UI Elements */
+.ui-label {
+    font-family: var(--font-secondary);
+    font-weight: var(--weight-medium);
+    font-size: var(--font-size-sm);
+    letter-spacing: var(--letter-spacing-wide);
+}
+
+.technical-text {
+    font-family: var(--font-secondary);
+    font-weight: var(--weight-regular);
+    font-size: var(--font-size-base);
+}
+
+.btn, button {
+    font-family: var(--font-primary);
+    font-weight: var(--weight-semibold);
+    font-size: var(--font-size-base);
+    letter-spacing: var(--letter-spacing-wide);
+}
+
+/* Navigation */
+.menu-item {
+    font-family: var(--font-primary);
+    font-weight: var(--weight-medium);
+    font-size: var(--font-size-base);
+    letter-spacing: var(--letter-spacing-normal);
+}
+
+/* Media Queries */
+@media (max-width: 768px) {
+    :root {
+        --font-size-base: 15px;
+        --font-size-md: 17px;
+        --font-size-lg: 19px;
+        --font-size-xl: 22px;
+        --font-size-2xl: 26px;
+        --font-size-3xl: 30px;
+    }
+}
+
+@media (max-width: 480px) {
+    :root {
+        --font-size-base: 14px;
+        --font-size-md: 16px;
+        --font-size-lg: 18px;
+        --font-size-xl: 20px;
+        --font-size-2xl: 24px;
+        --font-size-3xl: 28px;
+    }
+} 

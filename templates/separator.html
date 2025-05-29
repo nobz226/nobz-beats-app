@@ -1,0 +1,383 @@
+{% extends 'base.html' %}
+{% from 'components/hero.html' import hero %}
+
+{% block content %}
+<div class="hero-section">
+    <div class="title-container">
+        <h1 class="text-title"><span class="word">Stem</span> <span class="word">Separator</span></h1>
+        <p class="subtitle">Split your tracks into separate stems</p>
+    </div>
+</div>
+
+<div class="separator-container content-section">
+    <div class="separator-form">
+        <div class="notice">
+            <i class="fas fa-info-circle"></i>
+            For best results, use MP3 files
+        </div>
+        
+        <div class="file-drop-area">
+            <input type="file" id="audio-file" accept="audio/*" class="file-input">
+            <div class="file-icon separator-file-icon">
+                <i class="fas fa-cloud-upload-alt"></i>
+            </div>
+            <div class="file-msg">Drag & drop audio file or click to select</div>
+            <div class="file-name"></div>
+        </div>
+
+        <button id="separate-btn" disabled>
+            <span class="btn-text">Separate Stems</span>
+            <i class="fas fa-layer-group"></i>
+        </button>
+
+        <!-- Simple Warning Section (Initially Hidden) -->
+        <div id="separation-warning" class="separation-warning" style="display: none;">
+            <h3>Important Notice</h3>
+            <ul>
+                <li>Once started, the process cannot be stopped until complete</li>
+                <li>Please do not leave this page or close your browser</li>
+                <li>This may take several minutes depending on your file</li>
+            </ul>
+            <div class="warning-actions">
+                <button id="cancel-separation" class="warning-btn cancel-btn">Cancel</button>
+                <button id="confirm-separation" class="warning-btn confirm-btn">Continue</button>
+            </div>
+        </div>
+
+        <div class="separation-status" style="display: none;">
+            <div class="separator-progress-container">
+                <div class="separator-progress"></div>
+            </div>
+            <div class="separator-status-text"></div>
+        </div>
+
+        <div class="stems-section" style="display: none;">
+            <div class="stem-card" data-stem="drums">
+                <div class="stem-icon">
+                    <i class="fas fa-drum"></i>
+                </div>
+                <h3>Drums</h3>
+                <div class="audio-player">
+                    <audio controls>
+                        <source src="" type="audio/mpeg">
+                        Your browser does not support the audio element.
+                    </audio>
+                    <div class="audio-visualizer">
+                        <div class="bar"></div>
+                        <div class="bar"></div>
+                        <div class="bar"></div>
+                        <div class="bar"></div>
+                        <div class="bar"></div>
+                    </div>
+                </div>
+                <button class="download-btn">
+                    <i class="fas fa-download"></i>
+                    <span>Download Drums</span>
+                </button>
+            </div>
+            <div class="stem-card" data-stem="bass">
+                <div class="stem-icon">
+                    <i class="fas fa-guitar"></i>
+                </div>
+                <h3>Bass</h3>
+                <div class="audio-player">
+                    <audio controls>
+                        <source src="" type="audio/mpeg">
+                        Your browser does not support the audio element.
+                    </audio>
+                    <div class="audio-visualizer">
+                        <div class="bar"></div>
+                        <div class="bar"></div>
+                        <div class="bar"></div>
+                        <div class="bar"></div>
+                        <div class="bar"></div>
+                    </div>
+                </div>
+                <button class="download-btn">
+                    <i class="fas fa-download"></i>
+                    <span>Download Bass</span>
+                </button>
+            </div>
+            <div class="stem-card" data-stem="vocals">
+                <div class="stem-icon">
+                    <i class="fas fa-microphone"></i>
+                </div>
+                <h3>Vocals</h3>
+                <div class="audio-player">
+                    <audio controls>
+                        <source src="" type="audio/mpeg">
+                        Your browser does not support the audio element.
+                    </audio>
+                    <div class="audio-visualizer">
+                        <div class="bar"></div>
+                        <div class="bar"></div>
+                        <div class="bar"></div>
+                        <div class="bar"></div>
+                        <div class="bar"></div>
+                    </div>
+                </div>
+                <button class="download-btn">
+                    <i class="fas fa-download"></i>
+                    <span>Download Vocals</span>
+                </button>
+            </div>
+            <div class="stem-card" data-stem="melody">
+                <div class="stem-icon">
+                    <i class="fas fa-music"></i>
+                </div>
+                <h3>Melody</h3>
+                <div class="audio-player">
+                    <audio controls>
+                        <source src="" type="audio/mpeg">
+                        Your browser does not support the audio element.
+                    </audio>
+                    <div class="audio-visualizer">
+                        <div class="bar"></div>
+                        <div class="bar"></div>
+                        <div class="bar"></div>
+                        <div class="bar"></div>
+                        <div class="bar"></div>
+                    </div>
+                </div>
+                <button class="download-btn">
+                    <i class="fas fa-download"></i>
+                    <span>Download Melody</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="stems-output alternate-section">
+    <!-- Stems output content -->
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .audio-visualizer {
+        display: flex;
+        align-items: flex-end;
+        justify-content: center;
+        height: 50px;
+        gap: 3px;
+        margin: 10px 0;
+        opacity: 0.5;
+    }
+    
+    .audio-visualizer.active {
+        opacity: 1;
+    }
+    
+    .audio-visualizer .bar {
+        width: 5px;
+        height: 5px;
+        background-color: var(--primary-color);
+        border-radius: 2px;
+        transition: height 0.2s ease;
+    }
+    
+    .audio-visualizer.active .bar {
+        animation: sound-wave 1s infinite alternate;
+    }
+    
+    .audio-visualizer .bar:nth-child(1) {
+        animation-delay: 0s;
+    }
+    
+    .audio-visualizer .bar:nth-child(2) {
+        animation-delay: 0.2s;
+    }
+    
+    .audio-visualizer .bar:nth-child(3) {
+        animation-delay: 0.4s;
+    }
+    
+    .audio-visualizer .bar:nth-child(4) {
+        animation-delay: 0.6s;
+    }
+    
+    .audio-visualizer .bar:nth-child(5) {
+        animation-delay: 0.8s;
+    }
+    
+    @keyframes sound-wave {
+        0% {
+            height: 5px;
+        }
+        100% {
+            height: 40px;
+        }
+    }
+    
+    .file-drop-area {
+        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    }
+    
+    .file-drop-area.drag-over {
+        transform: scale(1.02);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        border-color: var(--primary-color);
+        background-color: rgba(252, 66, 66, 0.1);
+    }
+    
+    .file-drop-area.file-dropped {
+        animation: pulse 0.5s;
+    }
+    
+    .file-drop-area.file-success {
+        border-color: #4CAF50;
+        background-color: rgba(76, 175, 80, 0.1);
+    }
+    
+    /* Updated to match analyzer.css styling */
+    .file-icon.separator-file-icon {
+        font-size: 2.5rem !important;
+        color: rgba(255, 255, 255, 0.5) !important;
+        margin-bottom: 1rem !important;
+        opacity: 1 !important;
+        transition: all 0.3s ease !important;
+    }
+    
+    .file-drop-area:hover .file-icon.separator-file-icon {
+        color: var(--primary-color) !important;
+        transform: translateY(-5px) !important;
+        opacity: 1 !important;
+    }
+    
+    .stem-icon {
+        font-size: 2.5rem;
+        color: var(--primary-color);
+        margin-bottom: 15px;
+        opacity: 0.8;
+        transition: all 0.3s ease;
+    }
+    
+    .stem-card:hover .stem-icon {
+        transform: scale(1.1);
+        opacity: 1;
+    }
+    
+    .download-btn.clicked {
+        transform: scale(0.95);
+    }
+    
+    /* Notification styles */
+    .notification-container {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .notification {
+        background: rgba(30, 30, 30, 0.9);
+        color: white;
+        padding: 12px 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        transform: translateX(120%);
+        transition: transform 0.3s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+        backdrop-filter: blur(10px);
+        border-left: 3px solid #2196F3;
+    }
+    
+    .notification.success {
+        border-left-color: #4CAF50;
+    }
+    
+    .notification.error {
+        border-left-color: #F44336;
+    }
+    
+    .notification.show {
+        transform: translateX(0);
+    }
+    
+    .notification i {
+        font-size: 1.2rem;
+    }
+    
+    .notification.success i {
+        color: #4CAF50;
+    }
+    
+    .notification.error i {
+        color: #F44336;
+    }
+
+    /* Simple Warning Styles */
+    .separation-warning {
+        background-color: #1a1a1a;
+        border-radius: 8px;
+        padding: 20px;
+        margin: 20px 0;
+        border-left: 3px solid #ff5a5a;
+    }
+    
+    .separation-warning h3 {
+        color: #ff5a5a;
+        margin: 0 0 15px 0;
+        font-size: 1.2rem;
+        font-weight: 600;
+    }
+    
+    .separation-warning ul {
+        list-style-type: none;
+        padding: 0;
+        margin: 0 0 20px 0;
+    }
+    
+    .separation-warning li {
+        padding: 8px 0;
+        color: #fff;
+        position: relative;
+        padding-left: 20px;
+    }
+    
+    .separation-warning li:before {
+        content: "•";
+        color: #ff5a5a;
+        position: absolute;
+        left: 0;
+    }
+    
+    .warning-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+    }
+    
+    .warning-btn {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 4px;
+        font-weight: 500;
+        cursor: pointer;
+    }
+    
+    .cancel-btn {
+        background-color: #333;
+        color: white;
+    }
+    
+    .cancel-btn:hover {
+        background-color: #444;
+    }
+    
+    .confirm-btn {
+        background-color: #ff5a5a;
+        color: white;
+    }
+    
+    .confirm-btn:hover {
+        background-color: #ff6b6b;
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+{% from 'components/hero.html' import hero %}
+
+{% block content %}
+<div class="hero-section">
+    <div class="title-container">
+        <h1 class="text-title"><span class="word">Youtube</span> <span class="word">to</span> <span class="word">Audio</span></h1>
+        <p class="subtitle">Convert YouTube videos to audio files</p>
+    </div>
+</div>
+
+<div class="youtube-container content-section">
+    <div class="youtube-form">
+        <div class="notice">
+            <i class="fas fa-info-circle"></i>
+            For best results, use videos under 10 minutes in length
+        </div>
+        
+        <!-- URL Input Section -->
+        <div class="url-input-section">
+            <input type="text" id="youtube-url" placeholder="Enter YouTube video or playlist URL" class="url-input">
+            <button id="fetch-btn" class="fetch-button">
+                <span>Fetch Video(s)</span>
+                <i class="fas fa-search"></i>
+            </button>
+        </div>
+
+        <!-- Format Selection -->
+        <div class="format-selector">
+            <label>Convert to:</label>
+            <div class="format-options">
+                <button class="format-btn" data-format="mp3">MP3</button>
+                <button class="format-btn" data-format="wav">WAV</button>
+                <button class="format-btn" data-format="flac">FLAC</button>
+            </div>
+        </div>
+
+        <!-- Video List Section -->
+        <div class="video-list" style="display: none;">
+            <div class="select-all-container">
+                <label>
+                    <input type="checkbox" id="select-all">
+                    Select All
+                </label>
+                <span class="selected-count">0 selected</span>
+            </div>
+            
+            <div class="video-items">
+                <!-- Videos will be populated here -->
+            </div>
+        </div>
+
+        <!-- Conversion Controls -->
+        <div class="conversion-controls" style="display: none;">
+            <button id="convert-btn" disabled>
+                <span>Convert Selected</span>
+                <i class="fas fa-exchange-alt"></i>
+            </button>
+        </div>
+
+        <!-- Status Section -->
+        <div class="conversion-status" style="display: none;">
+            <div class="youtube-progress-container">
+                <div class="youtube-progress-bar"></div>
+            </div>
+            <div class="youtube-status-text"></div>
+        </div>
+    </div>
+</div>
+
+<div class="download-section alternate-section">
+    <div class="download-container">
+        <h2 class="section-title">Download Your Audio Files</h2>
+        <div class="download-content">
+            <div class="download-list" id="download-list">
+                <!-- Downloaded files will be listed here -->
+            </div>
+        </div>
+    </div>
+</div>
+<div style="height: 200px;"></div>  <!-- Added spacer -->
+
+{% endblock %}

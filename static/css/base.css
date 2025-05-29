@@ -1,0 +1,441 @@
+/* Root Variables */
+:root {
+    /* Global Player Artwork Sizes */
+    --global-artwork-size: 50px;
+    --global-artwork-size-mobile: 40px;
+    
+    /* Track Card Artwork Sizes */
+    --track-artwork-size: 90px;
+    --track-artwork-secondary-width: 200px;
+    --track-artwork-secondary-height: 100px;
+    
+    /* Admin Panel Artwork Sizes */
+    --admin-artwork-size: 40px;
+    
+    /* Mobile Sizes */
+    --track-artwork-size-mobile: 70px;
+    --track-artwork-secondary-mobile-size: 150px;  /* Single variable for mobile secondary artwork */
+    
+    /* Colors */
+    --primary-color: #fc4242;
+    --secondary-color: #2c2c2c;
+    --text-color: #ffffff;
+    --background-color: #121212;
+    --card-background: #1e1e1e;
+    --hover-color: #fc4242;
+    --card-hover-background: rgba(40, 40, 40, 0.8);
+    
+    /* Shadows */
+    --shadow-sm: 0 2px 5px rgba(0, 0, 0, 0.2);
+    --shadow-md: 0 4px 15px rgba(0, 0, 0, 0.3);
+    --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.4);
+    --shadow-primary: 0 4px 15px rgba(252, 66, 66, 0.3);
+    --shadow-primary-lg: 0 6px 20px rgba(252, 66, 66, 0.4);
+    
+    /* Transitions */
+    --transition-fast: all 0.2s ease;
+    --transition-normal: all 0.3s ease;
+    --transition-slow: all 0.5s ease;
+    
+    /* Borders */
+    --border-radius-small: 5px;
+    --border-radius-medium: 10px;
+    --border-radius-large: 15px;
+    --border-radius-circle: 50%;
+    
+    /* Z-indices */
+    --z-index-dropdown: 100;
+    --z-index-player: 900;
+    --z-index-preloader: 1000;
+}
+
+/* Reset and Global Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Font Face - Removed and moved to typography.css */
+
+/* Selection styling */
+::selection {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.2);
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(252, 66, 66, 0.5);
+    border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--primary-color);
+}
+
+/* Body and Main Layout */
+body {
+    background-color: var(--background-color);
+    color: var(--text-color);
+    line-height: 1.6;
+    scroll-behavior: smooth;
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    position: relative;
+}
+
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at 50% 50%, rgba(252, 66, 66, 0.03) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: -1;
+}
+
+main {
+    padding: 40px 20px 200px;
+    text-align: center;
+    font-size: 16px;
+    min-height: calc(100vh - 80px);
+    position: relative;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+/* Typography - Basic animations preserved, styling moved to typography.css */
+h1, h2 {
+    opacity: 0;
+    transform: translateY(30px);
+    animation: fadeInUp 1s forwards;
+}
+
+p {
+    opacity: 0;
+    transform: translateY(30px);
+    animation: fadeInUp 1s forwards;
+}
+
+h1 {
+    animation-delay: 0.3s;
+    position: relative;
+    display: inline-block;
+}
+
+h1::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, var(--primary-color), transparent);
+    opacity: 0;
+    animation: fadeIn 1s forwards 1s;
+}
+
+h2 {
+    margin-bottom: 40px;
+    margin-top: -80px;
+    animation-delay: 0.3s;
+}
+
+p {
+    margin-bottom: 20px;
+    animation-delay: 0.3s;
+}
+
+a {
+    color: var(--text-color);
+    text-decoration: none;
+    transition: var(--transition-normal);
+    position: relative;
+}
+
+a:not(.menu-item):not(.social-icon):not(.feature-link):not(.cta-button)::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background-color: var(--primary-color);
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: transform 0.3s ease;
+}
+
+a:not(.menu-item):not(.social-icon):not(.feature-link):not(.cta-button):hover::after {
+    transform: scaleX(1);
+    transform-origin: left;
+}
+
+a:hover {
+    color: var(--primary-color);
+}
+
+/* Button Styles */
+.btn {
+    display: inline-block;
+    padding: 12px 25px;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 30px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: var(--transition-normal);
+    box-shadow: var(--shadow-primary);
+    position: relative;
+    overflow: hidden;
+    text-align: center;
+}
+
+.btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: var(--transition-slow);
+}
+
+.btn:hover {
+    background-color: var(--primary-color-hover);
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-primary-lg);
+}
+
+.btn:hover::before {
+    left: 100%;
+}
+
+.btn:active {
+    transform: translateY(-1px);
+}
+
+.btn-outline {
+    background-color: transparent;
+    border: 2px solid var(--primary-color);
+    color: var(--primary-color);
+}
+
+.btn-outline:hover {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.btn-sm {
+    padding: 8px 16px;
+    font-size: 0.9rem;
+}
+
+.btn-lg {
+    padding: 15px 30px;
+    font-size: 1.1rem;
+}
+
+/* Card Styles */
+.card {
+    background-color: var(--bg-card);
+    border-radius: 15px;
+    padding: 25px;
+    margin-bottom: 20px;
+    box-shadow: var(--shadow-md);
+    transition: var(--transition-normal);
+    border: 1px solid var(--border-light);
+    backdrop-filter: blur(10px);
+    position: relative;
+    overflow: hidden;
+}
+
+.card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(252, 66, 66, 0.1) 0%, transparent 100%);
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-lg);
+    border-color: rgba(252, 66, 66, 0.3);
+}
+
+.card:hover::before {
+    opacity: 1;
+}
+
+/* Animations */
+@keyframes fadeInUp {
+    0% {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeIn {
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(252, 66, 66, 0.4);
+    }
+    70% {
+        transform: scale(1.05);
+        box-shadow: 0 0 0 10px rgba(252, 66, 66, 0);
+    }
+    100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(252, 66, 66, 0);
+    }
+}
+
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+/* Title Container */
+.title-container {
+    margin-bottom: 50px;
+    position: relative;
+}
+
+.word {
+    display: inline-block;
+    animation: float 6s ease-in-out infinite;
+}
+
+.word:nth-child(1) {
+    animation-delay: 0s;
+}
+
+.word:nth-child(2) {
+    animation-delay: 0.5s;
+}
+
+.word:nth-child(3) {
+    animation-delay: 1s;
+}
+
+/* Base Media Queries */
+@media (max-width: 768px) {
+    body {
+        font-size: 16px;
+    }
+
+    main {
+        padding: 20px 10px;
+    }
+
+    h1 {
+        font-size: 2.5rem;
+    }
+
+    h2 {
+        font-size: 0.9rem;
+        margin-top: -60px;
+    }
+
+    p {
+        font-size: 1rem;
+    }
+
+    .btn {
+        padding: 10px 20px;
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 480px) {
+    h1 {
+        font-size: 2rem;
+    }
+
+    h2 {
+        font-size: 0.8rem;
+        margin-top: -50px;
+    }
+
+    .title-container {
+        margin-bottom: 40px;
+    }
+}
+
+/* Added styles for fullscreen mode */
+@media (min-height: 900px) {
+    main {
+        padding-bottom: 120px;
+    }
+}
+
+/* Ensure content is visible on very large screens */
+@media (min-width: 1600px) {
+    main {
+        max-width: 1600px;
+        margin: 0 auto;
+    }
+}
+
+/* Add these styles at the end of base.css */
+.analyzer-container,
+.separator-container,
+.youtube-container {
+    padding-bottom: 120px; /* Adds space at the bottom */
+}
+
+/* Add these styles to create space AFTER the containers */
+main {
+    padding: 40px 20px 200px; /* Increased bottom padding from 80px to 200px */
+}
+
+/* Ensure content is visible on very large screens */
+@media (min-width: 1600px) {
+    main {
+        max-width: 1600px;
+        margin: 0 auto;
+    }
+}
+
+/* Added styles for fullscreen mode */
+@media (min-height: 900px) {
+    main {
+        padding-bottom: 120px;
+    }
+}

@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="hero-section">
+    <div class="title-container">
+        <h1 class="text-title"><span class="word">Production</span> <span class="word">Guides</span></h1>
+        <p class="subtitle">Learn Music Production with AI Assistant Alex</p>
+    </div>
+</div>
+
+<div class="chat-container content-section">
+    <div class="chat-controls">
+        <button id="newChatBtn">New Chat</button>
+        <button id="stopResponseBtn">Stop Response</button>
+    </div>
+
+    <div class="chat-messages" id="chatMessages">
+        <div class="bot-message">
+            Hi! I'm <strong>Alex</strong>, your beat making and music production guide. I can help you with making some beats and have fun doing it.
+        </div>
+    </div>
+
+    <div class="chat-input-container">
+        <input type="text" id="chatInput" placeholder="Ask me anything about music production...">
+        <button id="sendBtn">
+            <i class="fas fa-paper-plane"></i>
+        </button>
+    </div>
+
+    <div class="suggestion-chips">
+        <button class="chip" data-question="How do I start making beats?">How do I start making beats?</button>
+        <button class="chip" data-question="What's the best DAW for beginners?">Best DAW for beginners?</button>
+        <button class="chip" data-question="How do I mix drums?">How do I mix drums?</button>
+        <button class="chip" data-question="Explain music theory basics">Music theory basics</button>
+    </div>
+</div>
+
+<!-- Add a spacer div -->
+<div class="guides-bottom-spacer"></div>
+{% endblock %}
+
+
+
+
+
