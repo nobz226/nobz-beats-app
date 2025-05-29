@@ -28,17 +28,14 @@
         body, html {
             margin: 0;
             padding: 0;
-            height: 100%;
-            width: 100%;
+            overflow-x: hidden;
         }
         
         main {
             margin: 0;
             padding: 0;
             width: 100%;
-            min-height: calc(100vh - 80px);
-            display: flex;
-            flex-direction: column;
+            overflow-x: hidden;
         }
         
         /* Subtitle animation for all pages */
@@ -130,6 +127,14 @@
         .footer-info p {
             color: #cccccc;
             font-size: 1rem;
+        }
+        
+        /* Make main a flex container to push footer to bottom */
+        main {
+            display: flex;
+            flex-direction: column;
+            min-height: calc(100vh - 80px);
+            padding-bottom: 0 !important; /* Override the padding in base.css */
         }
         
         /* Style for content inside main to keep padding */

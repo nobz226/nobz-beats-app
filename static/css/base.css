@@ -91,8 +91,7 @@ body {
     scroll-behavior: smooth;
     margin: 0;
     padding: 0;
-    min-height: 100vh;
-    position: relative;
+    overflow-x: hidden;
 }
 
 body::before {
@@ -108,13 +107,14 @@ body::before {
 }
 
 main {
-    padding: 40px 20px 200px;
+    padding: 40px 20px 200px; /* Increased bottom padding from 80px to 200px */
     text-align: center;
     font-size: 16px;
     min-height: calc(100vh - 80px);
     position: relative;
     width: 100%;
     max-width: 100%;
+    overflow-x: hidden;
     box-sizing: border-box;
 }
 
