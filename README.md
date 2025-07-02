@@ -1,5 +1,10 @@
 # 🎧 NOBS BEATS APP 🎵
 > *Where Music Production Meets Innovation* ✨
+>
+>
+> *This is a project built using a combination of AI and handwritten code and is still a work in progress.
+>
+> 
 
 <div align="center">
   <img src="static/images/bg3.png" alt="Music Production Toolkit" width="100%"/>
