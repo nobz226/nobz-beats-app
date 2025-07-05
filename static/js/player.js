@@ -39,109 +39,21 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Initialize toggle button icon
   updateToggleButtonIcon();
-  
-  // Add scroll event listener to ensure player visibility on mobile
-  if (isMobileDevice()) {
-    window.addEventListener('scroll', () => {
-      ensurePlayerVisibility();
-    });
-  }
-  
-  // Function to ensure player and toggle button visibility on mobile
-  function ensurePlayerVisibility() {
-    if (!isMobileDevice()) return;
-    
-    // Make sure toggle button is always visible
-    if (player.toggleBtn) {
-      player.toggleBtn.style.display = 'flex';
-      player.toggleBtn.style.visibility = 'visible';
-      player.toggleBtn.style.opacity = '1';
-      player.toggleBtn.style.position = 'fixed';
-      player.toggleBtn.style.zIndex = '951';
-      
-      // Position differently based on player state
-      if (isPlayerHidden) {
-        player.toggleBtn.style.bottom = '0';
-        player.toggleBtn.style.left = '50%';
-        player.toggleBtn.style.transform = 'translateX(-50%)';
-      } else {
-        // Use different position based on screen size
-        if (window.innerWidth <= 480) {
-          player.toggleBtn.style.bottom = '90px';
-          player.toggleBtn.style.right = '15px';
-        } else {
-          player.toggleBtn.style.bottom = '70px';
-          player.toggleBtn.style.right = '15px';
-        }
-        player.toggleBtn.style.transform = 'translateX(0)';
-      }
-    }
-    
-    // Make sure player is always visible when active
-    if (player.playerContainer && player.playerContainer.classList.contains('active')) {
-      player.playerContainer.style.position = 'fixed';
-      player.playerContainer.style.bottom = '0';
-      player.playerContainer.style.zIndex = '950';
-      
-      if (isPlayerHidden) {
-        // Different transform based on screen size
-        if (window.innerWidth <= 480) {
-          player.playerContainer.style.transform = 'translateY(calc(100% - 25px))';
-        } else {
-          player.playerContainer.style.transform = 'translateY(calc(100% - 35px))';
-        }
-      } else {
-        player.playerContainer.style.transform = 'translateY(0)';
-      }
-    }
-  }
-
-  // Function to update toggle button icon based on player state
-  function updateToggleButtonIcon() {
-    if (player.toggleBtn) {
-      if (isPlayerHidden) {
-        player.toggleBtn.innerHTML = '<i class="fas fa-chevron-up"></i>';
-        player.toggleBtn.title = "Show Player";
-      } else {
-        player.toggleBtn.innerHTML = '<i class="fas fa-chevron-down"></i>';
-        player.toggleBtn.title = "Hide Player";
-      }
-      
-      // Ensure visibility
-      player.toggleBtn.style.display = 'flex';
-      player.toggleBtn.style.opacity = '1';
-    }
-    
-    // Ensure player visibility on mobile
-    if (isMobileDevice()) {
-      ensurePlayerVisibility();
-    }
-  }
 
   // Toggle player visibility
   player.toggleBtn.addEventListener("click", (e) => {
     e.preventDefault(); // Prevent any default behavior
     e.stopPropagation(); // Prevent event bubbling
-    
-    // Always allow the user to show/hide the player even if no track is loaded
+
+    isPlayerHidden = !isPlayerHidden;
     if (isPlayerHidden) {
-      // Unhide player
-      player.playerContainer.classList.add("active");
-      player.playerContainer.classList.remove("hidden");
-      isPlayerHidden = false;
+        player.playerContainer.classList.add("hidden");
     } else {
-      // Hide player
-      player.playerContainer.classList.add("hidden");
-      isPlayerHidden = true;
+        player.playerContainer.classList.remove("hidden");
     }
     
     updateToggleButtonIcon();
     saveState();
-    
-    // Ensure visibility on mobile
-    if (isMobileDevice()) {
-      ensurePlayerVisibility();
-    }
   });
 
   // Function to check if artwork should spin (has 'vinyl' in the name)
@@ -273,14 +185,11 @@ document.addEventListener("DOMContentLoaded", () => {
       // Show player if there was a track
       if (state.src) {
         player.playerContainer.classList.add("active");
-        
-        // Apply hidden state if needed
         if (isPlayerHidden) {
-          player.playerContainer.classList.add("hidden");
+            player.playerContainer.classList.add("hidden");
         } else {
-          player.playerContainer.classList.remove("hidden");
+            player.playerContainer.classList.remove("hidden");
         }
-        
         updateToggleButtonIcon();
       }
 
@@ -307,6 +216,11 @@ document.addEventListener("DOMContentLoaded", () => {
           once: true,
         });
       }
+    } else {
+        // If no saved state, ensure player is hidden
+        player.playerContainer.classList.add("hidden");
+        isPlayerHidden = true;
+        updateToggleButtonIcon();
     }
   };
 
@@ -354,8 +268,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // Show the player and unhide it when a track is loaded
       player.playerContainer.classList.add("active");
-      player.playerContainer.classList.remove("hidden");
-      isPlayerHidden = false;
+      if (isPlayerHidden) {
+        player.playerContainer.classList.remove("hidden");
+        isPlayerHidden = false;
+      }
       updateToggleButtonIcon();
 
       // Update play button icon

@@ -30,25 +30,16 @@
     height: auto;
     min-height: 90px;
     box-sizing: border-box;
-}
-
-/* Show the button even when player is not active */
-#global-audio-player:not(.active) .global-player-controls,
-#global-audio-player:not(.active) .global-player-info,
-#global-audio-player:not(.active) audio {
     visibility: hidden;
-    opacity: 0;
 }
 
 #global-audio-player.active {
     transform: translateY(0);
-    animation: slideUp 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
     visibility: visible;
-    opacity: 1;
 }
 
 #global-audio-player.hidden {
-    transform: translateY(calc(100% - 25px));
+    transform: translateY(100%);
 }
 
 #global-audio-player.hidden .global-player-info,
