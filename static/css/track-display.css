@@ -6,10 +6,10 @@
 }
 
 .track-container {
-    max-height: calc(100vh - 150px);
+    /* max-height: calc(100vh - 150px); */ /* Remove this to allow natural height */
     max-width: 1020px;
     width: 85%;
-    overflow-y: auto;
+    /* overflow-y: auto; */ /* Remove this to prevent double scrollbars */
     display: flex;
     flex-direction: column;
     gap: 15px;
