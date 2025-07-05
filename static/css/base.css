@@ -83,6 +83,10 @@
     background: var(--primary-color);
 }
 
+html {
+    overflow-x: hidden;
+}
+
 /* Body and Main Layout */
 body {
     background-color: var(--background-color);
@@ -91,7 +95,6 @@ body {
     scroll-behavior: smooth;
     margin: 0;
     padding: 0;
-    overflow-x: hidden;
 }
 
 body::before {
