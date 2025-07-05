@@ -153,22 +153,42 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Function to manage artwork spinning
   const updateArtworkSpinning = (isPlaying) => {
-    // Check if we have an artwork element
-    const artworkElement = document.querySelector('.track-artwork');
-    if (!artworkElement) return;
-    
-    // Only apply spinning animation on desktop
-    if (!isMobileDevice()) {
-      if (isPlaying) {
-        artworkElement.classList.add('spinning');
-        artworkElement.classList.remove('paused');
+    // Handle global player artwork
+    if (player.artworkImage) {
+      if (!isMobileDevice()) {
+        if (isPlaying) {
+          player.artworkImage.classList.add('spinning');
+          player.artworkImage.classList.remove('paused');
+        } else {
+          player.artworkImage.classList.add('paused');
+          player.artworkImage.classList.remove('spinning');
+        }
       } else {
-        artworkElement.classList.add('paused');
-        artworkElement.classList.remove('spinning');
+        player.artworkImage.classList.remove('spinning', 'paused');
       }
-    } else {
-      // On mobile, remove all spinning/paused classes
-      artworkElement.classList.remove('spinning', 'paused');
+    }
+
+    // Handle showcase page artwork for the currently playing track
+    if (currentTrackIndex !== -1 && trackList.length > 0) {
+      // Find the track card corresponding to the currentTrackIndex
+      // This assumes the order of .play-track-btn matches the trackList index
+      const trackButtons = document.querySelectorAll(".play-track-btn");
+      if (trackButtons[currentTrackIndex]) {
+        const trackCard = trackButtons[currentTrackIndex].closest('.track-card');
+        const showcaseArtwork = trackCard ? trackCard.querySelector('.track-artwork') : null;
+
+        if (showcaseArtwork && !isMobileDevice()) {
+          if (isPlaying) {
+            showcaseArtwork.classList.add('spinning');
+            showcaseArtwork.classList.remove('paused');
+          } else {
+            showcaseArtwork.classList.add('paused');
+            showcaseArtwork.classList.remove('spinning');
+          }
+        } else if (showcaseArtwork) { // On mobile, ensure no spinning
+          showcaseArtwork.classList.remove('spinning', 'paused');
+        }
+      }
     }
   };
 
