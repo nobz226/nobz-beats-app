@@ -1,12 +1,11 @@
 /* CRT Effect CSS */
 :root {
-  --crt-intensity: 0.5; /* Default intensity value */
+  --crt-intensity: 2; /* Default intensity value */
   --crt-brightness: 1.08; /* Brightness compensation */
 }
 
 /* CRT Container - applies to the entire body */
 .crt-effect {
-  position: relative;
   z-index: 0;
   /* Brightness adjustment only, no bloom */
   filter: brightness(var(--crt-brightness)) contrast(1.05);

@@ -16,7 +16,7 @@ function createCRTElements() {
     const body = document.body;
     
     // Add CRT effect class to body
-    body.classList.add('crt-effect');
+    document.getElementById('main-content').classList.add('crt-effect');
     
     // Create curvature element
     const curvature = document.createElement('div');
