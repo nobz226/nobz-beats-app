@@ -95,13 +95,14 @@
 - 🐍 Python 3.8+
 - 🎬 FFmpeg
 - 📦 Node.js (optional, for development)
+  
 
 ### Setup
 
 1️⃣ Clone the repository
 ```bash
-git clone https://github.com/yourusername/music-production-toolkit.git
-cd music-production-toolkit
+git clone https://github.com/nobz226/nobz-beats-app.git
+cd nobz-beats-app
 ```
 
 2️⃣ Create and activate a virtual environment
@@ -119,7 +120,8 @@ pip install -r requirements.txt
 Create a `.env` file in the project root:
 ```
 TOGETHER_API_KEY=your_together_api_key
-```
+ADMIN_USER=your_admin_user
+ADMIN_PASSWORD=your_admin_password
 
 5️⃣ Initialize the database
 ```bash
