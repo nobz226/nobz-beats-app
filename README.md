@@ -56,7 +56,6 @@
 ### 🎨 Design Features
 - 📱 Responsive design for mobile and desktop
 - 🎧 Custom vinyl loading animation
-- 🌈 Modern gradient effects and CRT-style animations
 - 🌙 Dark theme optimized for producers
 
 ---
