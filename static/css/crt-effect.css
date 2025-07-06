@@ -1,6 +1,6 @@
 /* CRT Effect CSS */
 :root {
-  --crt-intensity: 2; /* Default intensity value */
+  --crt-intensity: 0.5; /* Default intensity value */
   --crt-brightness: 1.08; /* Brightness compensation */
 }
 
