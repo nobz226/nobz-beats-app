@@ -737,11 +737,11 @@ if __name__ == '__main__':
     with app.app_context():
         db.create_all()
         # Create admin user if it doesn't exist
-        admin_user = User.query.filter_by(username='Nobz').first()
+        admin_user = User.query.filter_by(username=os.getenv('ADMIN_USER')).first()
         if not admin_user:
             admin_user = User(
-                username='Nobz',
-                password=generate_password_hash('LETmeinnow36$'),
+                username=os.getenv('ADMIN_USER'),
+                password=generate_password_hash(os.getenv('ADMIN_PASSWORD')),
                 is_admin=True
             )
             db.session.add(admin_user)
