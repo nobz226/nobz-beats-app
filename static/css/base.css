@@ -84,15 +84,18 @@
 }
 
 /* Body and Main Layout */
+body, html {
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+}
+
 body {
     background-color: var(--background-color);
     color: var(--text-color);
     line-height: 1.6;
     scroll-behavior: smooth;
-    margin: 0;
-    padding: 0;
-    overflow-x: hidden;
-    overflow-y:hidden;
+    overflow-y: hidden;
 }
 
 body::before {
@@ -108,15 +111,75 @@ body::before {
 }
 
 main {
-    padding: 40px 20px 200px; /* Increased bottom padding from 80px to 200px */
+    margin: 0;
+    padding: 40px 20px 200px;
+    width: 100%;
+    overflow-x: hidden;
     text-align: center;
     font-size: 16px;
     min-height: calc(100vh - 80px);
     position: relative;
-    width: 100%;
     max-width: 100%;
-    overflow-x: hidden;
     box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 0;
+}
+
+/* Content wrapper for proper padding */
+.content-wrapper {
+    padding: 0;
+    flex: 1;
+}
+
+/* Subtitle animation for all pages */
+.subtitle, h2:not(.section-title) {
+    font-family: var(--font-primary);
+    font-size: var(--font-size-md);
+    color: #fc4242;
+    margin-top: 0.5rem;
+    text-align: center;
+    opacity: 0;
+    /* Calculate total animation time: 
+       1s initial delay + (avg 10 chars * 0.15s per char) + 1s buffer = ~3.5s */
+    animation: fadeIn 2s forwards 3.5s;
+}
+
+/* Global toggle button styles */
+.global-toggle-btn {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    z-index: 951 !important;
+    background: rgba(252, 66, 66, 0.2) !important;
+    border: 1px solid rgba(252, 66, 66, 0.5) !important;
+}
+
+/* Footer Styling */
+.footer-info {
+    background: linear-gradient(
+        135deg,
+        #0a0a0a 0%,
+        rgba(252, 66, 66, 0.02) 50%,
+        #0a0a0a 100%
+    );
+    padding: 2rem;
+    position: relative;
+    margin-bottom: 0;
+    margin-top: 0;
+    width: 100%;
+    text-align: center;
+}
+
+.footer-info h3 {
+    color: #ffffff;
+    margin-bottom: 0.5rem;
+    font-size: 1.3rem;
+}
+
+.footer-info p {
+    color: #cccccc;
+    font-size: 1rem;
 }
 
 /* Typography - Basic animations preserved, styling moved to typography.css */
@@ -198,14 +261,15 @@ a:hover {
     background-color: var(--primary-color);
     color: white;
     border: none;
-    border-radius: 30px;
-    font-size: 1rem;
+    border-radius: var(--border-radius-small);
     cursor: pointer;
+    font-size: 16px;
+    font-weight: 600;
+    text-decoration: none;
     transition: var(--transition-normal);
-    box-shadow: var(--shadow-primary);
     position: relative;
     overflow: hidden;
-    text-align: center;
+    box-shadow: var(--shadow-primary);
 }
 
 .btn::before {
@@ -216,12 +280,11 @@ a:hover {
     width: 100%;
     height: 100%;
     background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-    transition: var(--transition-slow);
+    transition: left 0.5s;
 }
 
 .btn:hover {
-    background-color: var(--primary-color-hover);
-    transform: translateY(-3px);
+    transform: translateY(-2px);
     box-shadow: var(--shadow-primary-lg);
 }
 
@@ -230,7 +293,7 @@ a:hover {
 }
 
 .btn:active {
-    transform: translateY(-1px);
+    transform: translateY(0);
 }
 
 .btn-outline {
@@ -246,24 +309,21 @@ a:hover {
 
 .btn-sm {
     padding: 8px 16px;
-    font-size: 0.9rem;
+    font-size: 14px;
 }
 
 .btn-lg {
-    padding: 15px 30px;
-    font-size: 1.1rem;
+    padding: 16px 32px;
+    font-size: 18px;
 }
 
-/* Card Styles */
 .card {
-    background-color: var(--bg-card);
-    border-radius: 15px;
-    padding: 25px;
-    margin-bottom: 20px;
+    background-color: var(--card-background);
+    border-radius: var(--border-radius-medium);
+    padding: 20px;
+    margin: 10px 0;
     box-shadow: var(--shadow-md);
     transition: var(--transition-normal);
-    border: 1px solid var(--border-light);
-    backdrop-filter: blur(10px);
     position: relative;
     overflow: hidden;
 }
@@ -275,103 +335,95 @@ a:hover {
     left: 0;
     width: 100%;
     height: 100%;
-    background: linear-gradient(135deg, rgba(252, 66, 66, 0.1) 0%, transparent 100%);
+    background: linear-gradient(135deg, rgba(252, 66, 66, 0.05) 0%, transparent 100%);
     opacity: 0;
-    transition: opacity 0.5s ease;
+    transition: opacity 0.3s ease;
 }
 
 .card:hover {
     transform: translateY(-5px);
     box-shadow: var(--shadow-lg);
-    border-color: rgba(252, 66, 66, 0.3);
 }
 
 .card:hover::before {
     opacity: 1;
 }
 
+/* Title container and word animations */
+.title-container {
+    position: relative;
+    z-index: 2;
+}
+
+.word {
+    display: inline-block;
+    vertical-align: baseline;
+}
+
+.word:nth-child(1) {
+    animation-delay: 0.1s;
+}
+
+.word:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.word:nth-child(3) {
+    animation-delay: 0.3s;
+}
+
 /* Animations */
 @keyframes fadeInUp {
-    0% {
+    from {
         opacity: 0;
         transform: translateY(30px);
     }
-    100% {
+    to {
         opacity: 1;
         transform: translateY(0);
     }
 }
 
 @keyframes fadeIn {
-    to {
-        opacity: 1;
-    }
+    from { opacity: 0; }
+    to { opacity: 1; }
 }
 
 @keyframes pulse {
-    0% {
+    0%, 100% {
         transform: scale(1);
-        box-shadow: 0 0 0 0 rgba(252, 66, 66, 0.4);
     }
-    70% {
+    50% {
         transform: scale(1.05);
-        box-shadow: 0 0 0 10px rgba(252, 66, 66, 0);
-    }
-    100% {
-        transform: scale(1);
-        box-shadow: 0 0 0 0 rgba(252, 66, 66, 0);
     }
 }
 
 @keyframes float {
     0%, 100% {
-        transform: translateY(0);
+        transform: translateY(0px);
     }
     50% {
         transform: translateY(-10px);
     }
 }
 
-/* Title Container */
-.title-container {
-    margin-bottom: 50px;
-    position: relative;
-}
-
-.word {
-    display: inline-block;
-    animation: float 6s ease-in-out infinite;
-}
-
-.word:nth-child(1) {
-    animation-delay: 0s;
-}
-
-.word:nth-child(2) {
-    animation-delay: 0.5s;
-}
-
-.word:nth-child(3) {
-    animation-delay: 1s;
-}
-
-/* Base Media Queries */
+/* Mobile Responsive */
 @media (max-width: 768px) {
     body {
-        font-size: 16px;
+        font-size: 14px;
     }
 
     main {
-        padding: 20px 10px;
+        padding: 20px 15px 150px;
     }
 
     h1 {
-        font-size: 2.5rem;
+        font-size: 2rem;
     }
 
     h2 {
-        font-size: 0.9rem;
-        margin-top: -60px;
+        font-size: 1.5rem;
+        margin-bottom: 20px;
     }
 
     p {
@@ -380,62 +432,97 @@ a:hover {
 
     .btn {
         padding: 10px 20px;
-        font-size: 0.9rem;
+        font-size: 14px;
+    }
+
+    .title-container {
+        margin-bottom: 20px;
+    }
+
+    /* Mobile specific styling for the toggle button */
+    .global-toggle-btn {
+        bottom: 70px !important;
+        right: 15px !important;
+        position: fixed !important;
+        z-index: 951 !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+    }
+    
+    /* When player is hidden or inactive, position the toggle at the bottom center */
+    #global-audio-player.hidden ~ .global-toggle-btn,
+    #global-audio-player:not(.active) ~ .global-toggle-btn {
+        bottom: 0 !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
     }
 }
 
 @media (max-width: 480px) {
     h1 {
-        font-size: 2rem;
+        font-size: 1.8rem;
     }
 
     h2 {
-        font-size: 0.8rem;
-        margin-top: -50px;
+        font-size: 1.3rem;
     }
 
     .title-container {
-        margin-bottom: 40px;
+        margin-bottom: 15px;
+    }
+
+    /* Additional styles for smaller mobile screens */
+    .global-toggle-btn {
+        bottom: 90px !important;
+        right: 15px !important;
+    }
+    
+    /* When player is hidden or inactive, position the toggle at the bottom center */
+    #global-audio-player.hidden ~ .global-toggle-btn,
+    #global-audio-player:not(.active) ~ .global-toggle-btn {
+        bottom: 0 !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
     }
 }
 
-/* Added styles for fullscreen mode */
 @media (min-height: 900px) {
     main {
-        padding-bottom: 120px;
+        padding-top: 60px;
+        padding-bottom: 60px;
     }
 }
 
-/* Ensure content is visible on very large screens */
 @media (min-width: 1600px) {
     main {
-        max-width: 1600px;
-        margin: 0 auto;
+        padding-left: 40px;
+        padding-right: 40px;
     }
 }
 
-/* Add these styles at the end of base.css */
+/* Specific page containers */
 .analyzer-container,
+.converter-container,
 .separator-container {
-    padding-bottom: 120px; /* Adds space at the bottom */
+    max-width: 800px;
+    margin: 0 auto;
 }
 
-/* Add these styles to create space AFTER the containers */
+/* Ensure proper spacing for all pages */
 main {
-    padding: 40px 20px 200px; /* Increased bottom padding from 80px to 200px */
+    padding-bottom: 0;
 }
 
-/* Ensure content is visible on very large screens */
 @media (min-width: 1600px) {
     main {
-        max-width: 1600px;
-        margin: 0 auto;
+        padding-left: 40px;
+        padding-right: 40px;
     }
 }
 
-/* Added styles for fullscreen mode */
 @media (min-height: 900px) {
     main {
-        padding-bottom: 120px;
+        padding-top: 60px;
+        padding-bottom: 60px;
     }
 }

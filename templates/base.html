@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/typography.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/hero.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/navigation.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/track-display.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/audio-player.css') }}">
@@ -23,127 +24,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/gradients.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <style>
-        body, html {
-            margin: 0;
-            padding: 0;
-            overflow-x: hidden;
-        }
-        
-        main {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            overflow-x: hidden;
-        }
-        
-        /* Subtitle animation for all pages */
-        .subtitle, h2:not(.section-title) {
-            font-family: var(--font-primary);
-            font-size: var(--font-size-md);
-            color: #fc4242;
-            margin-top: 0.5rem;
-            text-align: center;
-            opacity: 0;
-            /* Calculate total animation time: 
-               1s initial delay + (avg 10 chars * 0.15s per char) + 1s buffer = ~3.5s */
-            animation: fadeIn 2s forwards 3.5s;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-        
-        /* Ensure toggle button is visible immediately without waiting for JS */
-        .global-toggle-btn {
-            display: flex !important;
-            visibility: visible !important;
-            opacity: 1 !important;
-            z-index: 951 !important;
-            background: rgba(252, 66, 66, 0.2) !important;
-            border: 1px solid rgba(252, 66, 66, 0.5) !important;
-        }
-        
-        /* Mobile specific styling for the toggle button - move higher up */
-        @media (max-width: 768px) {
-            .global-toggle-btn {
-                bottom: 70px !important; /* Move higher up from the bottom */
-                right: 15px !important; /* Keep it on the right side */
-                position: fixed !important;
-                z-index: 951 !important;
-                visibility: visible !important;
-                opacity: 1 !important;
-            }
-            
-            /* When player is hidden or inactive, position the toggle at the bottom center */
-            #global-audio-player.hidden ~ .global-toggle-btn,
-            #global-audio-player:not(.active) ~ .global-toggle-btn {
-                bottom: 0 !important;
-                left: 50% !important;
-                transform: translateX(-50%) !important;
-            }
-        }
-        
-        /* Additional styles for smaller mobile screens */
-        @media (max-width: 480px) {
-            .global-toggle-btn {
-                bottom: 90px !important; /* Move even higher for smaller screens */
-                right: 15px !important;
-            }
-            
-            /* When player is hidden or inactive, position the toggle at the bottom center */
-            #global-audio-player.hidden ~ .global-toggle-btn,
-            #global-audio-player:not(.active) ~ .global-toggle-btn {
-                bottom: 0 !important;
-                left: 50% !important;
-                transform: translateX(-50%) !important;
-            }
-        }
-        
-        /* Footer Styling */
-        .footer-info {
-            background: linear-gradient(
-                135deg,
-                #0a0a0a 0%,
-                rgba(252, 66, 66, 0.02) 50%,
-                #0a0a0a 100%
-            );
-            padding: 2rem;
-            position: relative;
-            margin-bottom: 0; /* Ensure no margin below footer */
-            margin-top: 0; /* Remove space between content and footer */
-            width: 100%;
-            text-align: center;
-        }
-        
-        .footer-info h3 {
-            color: #ffffff;
-            margin-bottom: 0.5rem;
-            font-size: 1.3rem;
-        }
-        
-        .footer-info p {
-            color: #cccccc;
-            font-size: 1rem;
-        }
-        
-        /* Make main a flex container to push footer to bottom */
-        main {
-            display: flex;
-            flex-direction: column;
-            min-height: calc(100vh - 80px);
-            padding-bottom: 0 !important; /* Override the padding in base.css */
-        }
-        
-        /* Style for content inside main to keep padding */
-        .content-wrapper {
-            padding: 0; /* Removed all padding */
-            flex: 1;
-        }
-    </style>
 
-    {% block extra_css %}{% endblock %}
 </head>
 
 <body>
@@ -174,7 +55,7 @@
         
         <div class="global-player-info">
             <div class="artwork-container">
-                <img class="track-artwork" src="" alt="" style="display: none; width: 100%; height: 100%; object-fit: contain; border-radius: 50%; margin: 0; padding: 0;">
+                <img class="track-artwork" src="" alt="">
                 <div class="artwork-placeholder">
                     <i class="fas fa-music"></i>
                 </div>
