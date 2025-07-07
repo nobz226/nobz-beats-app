@@ -43,11 +43,6 @@
 - 📲 Simple drag-and-drop interface
 - 🚀 Fast processing with automatic download
 
-### 📹 YouTube to Audio
-- 📺 Extract audio from YouTube videos or playlists
-- 🎚️ Select desired output format
-- 📦 Batch conversion supported
-
 ### 🎓 Production Guides
 - 🤖 Interactive AI chatbot (Alex) for music production advice
 - 💡 Instant answers to music production questions
@@ -77,7 +72,6 @@
 - **🎚️ Audio Processing**: 
   - 🎵 librosa (audio analysis)
   - 🔊 demucs (stem separation)
-  - 📺 yt-dlp (YouTube download)
   - 🎞️ FFmpeg (format conversion)
 - **🧠 AI Integration**: LLaMA 3.3 70B via Together API
 - **🎨 Frontend**: 
@@ -171,7 +165,6 @@ music-production-toolkit/
     ├── analyzer.html      # Audio analysis template
     ├── separator.html     # Stem separator template
     ├── converter.html     # Format converter template
-    ├── youtube.html       # YouTube downloader template
     ├── guides.html        # Production guides template
     └── admin.html         # Admin panel template
 ```
@@ -195,12 +188,6 @@ music-production-toolkit/
 2. 🎯 Select the desired output format
 3. 🔘 Click "Convert"
 4. 💾 Download the converted file
-
-### 📺 YouTube to Audio
-1. 📋 Paste a YouTube URL (video or playlist)
-2. 🎯 Select the output format
-3. 🔘 Click "Convert"
-4. 💾 Download the audio file
 
 ### 🤖 AI Production Guide
 1. 💬 Type a question about music production
@@ -250,7 +237,6 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 - 🎛️ [Demucs](https://github.com/facebookresearch/demucs) for the stem separation technology
 - 🎵 [librosa](https://librosa.org/) for audio analysis capabilities
-- 📺 [yt-dlp](https://github.com/yt-dlp/yt-dlp) for YouTube extraction
 - 🧠 [LLaMA](https://ai.meta.com/llama/) by Meta for the AI assistant technology
 - 🤝 [Together](https://www.together.ai/) for AI API services
 
