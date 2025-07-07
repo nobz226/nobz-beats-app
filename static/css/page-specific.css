@@ -1,12 +1,4 @@
-/* Common Image Styles */
-.title-image {
-    margin-top: -60px;
-    max-width: 100%;
-    height: 400px;
-    width: 400px;
-    transform: translateY(30px);
-    animation: fadeInUp 2s forwards;
-}
+
 
 /* Title Container */
 .title-container, .title-container-about {
@@ -82,46 +74,6 @@
     display: none !important;
 }
 
-/* Home Page Styles */
-.title-image-home {
-    margin-top: -30px;
-    max-width: 100%;
-    height: 600px;
-    width: 600px;
-    transform: translateY(30px);
-    animation: fadeInUp 2s forwards;
-}
-
-
-/* Admin Page Image */
-.admin-title-image {
-    margin-top: -90px;
-    max-width: 100%;
-    height: 400px;
-    width: 400px;
-    transform: translateY(30px);
-    animation: fadeInUp 2s forwards;
-}
-
-/* Login Page Image */
-.login-title-image {
-    margin-top: -90px;
-    max-width: 100%;
-    height: 300px;
-    width: 300px;
-    transform: translateY(30px);
-    animation: fadeInUp 2s forwards;
-}
-
-/* About Page Styles */
-.title-image-about {
-    margin-top: -50px;
-    max-width: 100%;
-    height: 200px;
-    width: 300px;
-    transform: translateY(30px);
-    animation: fadeInUp 2s forwards;
-}
 
 /* About Page Styles */
 .about-container {
@@ -230,18 +182,6 @@
 /* Media Queries */
 @media (max-width: 768px) {
     /* Home Page */
-    .title-image-home {
-        height: 300px;
-        width: 300px;
-        margin-top: 0;
-    }
-    
-    /* Common Title Image */
-    .title-image {
-        height: 200px;
-        width: 200px;
-        margin-top: -30px;
-    }
     
     /* Text Title Mobile Styles */
     .text-title {
@@ -258,11 +198,6 @@
     }
     
     /* About Page */
-    .title-image-about {
-        height: 150px;
-        width: 225px;
-        margin-top: -40px;
-    }
 
     .title-container-about + p {
         font-size: 24px;
@@ -297,14 +232,6 @@
     .section-description { font-size: 0.85rem; }
 
     /* Login Page */
-    .login-title-image {
-        margin-top: -90px;
-        max-width: 300px;
-        width: 100%;
-        height: auto;
-        aspect-ratio: 1/1;
-        object-fit: contain;
-    }
 
     /* Admin Page */
     .admin-title-image {
@@ -355,12 +282,7 @@
 }
 
 @media (max-width: 360px) {
-    .title-image,
-    .title-image-home,
-    .title-image-about {
-        transform: scale(0.9);
-    }
-
+   
     .about-container h1 { font-size: 1.2rem; }
     .about-container h2 { font-size: 1.2rem; }
     .about-container h3 { font-size: 1.1rem; }

@@ -56,6 +56,8 @@
     box-sizing: border-box;
 }
 
+
+
 /* Font Face - Removed and moved to typography.css */
 
 /* Selection styling */
@@ -111,7 +113,6 @@ body::before {
 
 main {
     margin: 0;
-    padding: 40px 20px 200px;
     width: 100%;
     overflow-x: hidden;
     text-align: center;
@@ -132,7 +133,7 @@ main {
 }
 
 /* Subtitle animation for all pages */
-.subtitle, h2:not(.section-title) {
+ h2:not(.section-title) {
     font-family: var(--font-primary);
     font-size: var(--font-size-md);
     color: #fc4242;

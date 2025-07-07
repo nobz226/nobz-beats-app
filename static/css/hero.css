@@ -12,6 +12,17 @@
     padding: 0;
 }
 
+.subtitle {
+    font-family: var(--font-secondary);
+    font-size: var(--font-size-md);
+    font-weight: var(--weight-medium);
+    color: #fc4242;
+    margin-top: -1rem;
+    opacity: 0;
+    animation: fadeIn 2s forwards 3s;
+    line-height: var(--line-height-normal);
+}
+
 .hero-section::before {
     content: '';
     position: absolute;
@@ -53,15 +64,6 @@
     animation-delay: 0.3s;
 }
 
-.hero-subtitle {
-    font-family: var(--font-accent);
-    font-size: var(--font-size-xl);
-    font-weight: var(--weight-medium);
-    color: #ffffff;
-    margin-top: 1rem;
-    opacity: 0;
-    animation: fadeIn 1s ease-out forwards 0.8s;
-}
 
 @keyframes fadeInUp {
     from {

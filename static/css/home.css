@@ -1,9 +1,5 @@
 /* Home Page Specific Styles */
 
-/* Custom styles for home page */
-.tagline {
-    font-size: var(--font-size-xl) !important; /* Keep original size */
-}
 
 .home-content {
     padding: 0;
@@ -13,32 +9,6 @@
     min-height: 100vh; /* Minimum height of viewport */
     display: flex;
     flex-direction: column;
-}
-
-/* Hero Section */
-.hero-section {
-    margin: 0;
-    padding: 0;
-    width: 100%;
-    min-height: 45vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-}
-
-.hero-section::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-image: url("../images/bg3.png");
-    background-size: cover;
-    background-position: center;
-    opacity: 0.2;
-    z-index: 0;
 }
 
 .text-title {
@@ -51,17 +21,6 @@
 .text-title .word {
     display: inline-block !important;
     vertical-align: baseline !important;
-}
-
-.subtitle {
-    font-family: var(--font-accent);
-    font-size: var(--font-size-xl);
-    font-weight: var(--weight-medium);
-    color: #fc4242;
-    margin-top: -1rem;
-    opacity: 0;
-    animation: fadeIn 2s forwards 3s;
-    line-height: var(--line-height-normal);
 }
 
 /* Section Title Styling - Moved here to apply to all sections */
