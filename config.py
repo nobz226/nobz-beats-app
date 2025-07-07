@@ -13,24 +13,11 @@ class Config:
     # File upload settings
     UPLOAD_FOLDER = 'static/uploads'
     CONVERTED_FOLDER = 'static/converted'
-    YOUTUBE_FOLDER = 'static/youtube'
     
     # API keys
     TOGETHER_API_KEY = os.getenv('TOGETHER_API_KEY')
     
-    # YouTube downloader configuration
-    YDL_OPTS_BASE = {
-        'format': 'bestaudio/best',
-        'quiet': False,
-        'no_warnings': False,
-        'extract_audio': True,
-        'postprocessor_args': [
-            '-ar', '44100',
-            '-ac', '2',
-            '-b:a', '192k',
-        ],
-        'prefer_ffmpeg': True,
-    }
+
     
     # Session settings
     SESSION_TIMEOUT = 300  # 5 minutes in seconds
@@ -41,7 +28,6 @@ class Config:
         # Ensure required directories exist
         os.makedirs(Config.UPLOAD_FOLDER, exist_ok=True)
         os.makedirs(Config.CONVERTED_FOLDER, exist_ok=True)
-        os.makedirs(Config.YOUTUBE_FOLDER, exist_ok=True)
 
 
 class DevelopmentConfig(Config):

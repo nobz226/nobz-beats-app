@@ -416,8 +416,7 @@ a:hover {
 
 /* Add these styles at the end of base.css */
 .analyzer-container,
-.separator-container,
-.youtube-container {
+.separator-container {
     padding-bottom: 120px; /* Adds space at the bottom */
 }
 

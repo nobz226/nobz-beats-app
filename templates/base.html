@@ -19,7 +19,6 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/guides.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/analyzer.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/separator.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/youtube.css') }}">
     <!-- <link rel="stylesheet" href="{{ url_for('static', filename='css/crt-effect.css') }}"> -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/gradients.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -223,7 +222,6 @@
         <a href="{{ url_for('audio.stem_separator') }}" class="menu-item"><i class="fas fa-layer-group"></i>Stem Separator</a>
         <a href="{{ url_for('audio.converter') }}" class="menu-item"><i class="fas fa-exchange-alt"></i>Audio Converter</a>
         <a href="{{ url_for('audio.analyze_audio') }}" class="menu-item"><i class="fas fa-wave-square"></i>Audio Analyzer</a>
-        <a href="{{ url_for('youtube_converter') }}" class="menu-item"><i class="fab fa-youtube"></i>Youtube to Audio</a>
         {% if current_user.is_authenticated and current_user.is_admin %}
             <a href="{{ url_for('admin_panel') }}" class="menu-item"><i class="fas fa-user-shield"></i>Admin Panel</a>
             <a href="{{ url_for('logout') }}" class="menu-item"><i class="fas fa-sign-out-alt"></i>Logout</a>
@@ -274,7 +272,6 @@
     <script src="{{ url_for('static', filename='js/guides.js') }}"></script>
     <script src="{{ url_for('static', filename='js/analyzer.js') }}"></script>
     <script src="{{ url_for('static', filename='js/separator.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/youtube.js') }}"></script>
     <script src="{{ url_for('static', filename='js/title-animation.js') }}"></script>
 
     <script>
