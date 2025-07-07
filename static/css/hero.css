@@ -5,7 +5,6 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    background: linear-gradient(135deg, rgba(26,26,26,0.95) 0%, rgba(10,10,10,0.95) 100%);
     padding: 3rem 2rem;
     overflow: hidden;
     width: 100%;

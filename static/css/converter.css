@@ -9,7 +9,6 @@
     font-family: var(--font-primary);
     font-size: var(--font-size-4xl);
     font-weight: var(--weight-black);
-    background: linear-gradient(45deg, var(--primary-color), #ff8a8a);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
@@ -245,7 +244,6 @@ h2 {
 
 .converter-progress {
     height: 100%;
-    background: linear-gradient(90deg, var(--primary-color), #ff8a8a);
     width: 0%;
     border-radius: 4px;
     transition: width 0.3s ease;
