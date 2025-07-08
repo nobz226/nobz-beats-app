@@ -234,14 +234,6 @@
     /* Login Page */
 
     /* Admin Page */
-    .admin-title-image {
-        margin-top: -90px;
-        max-width: 400px;
-        width: 100%;
-        height: auto;
-        aspect-ratio: 1/1;
-        object-fit: contain;
-    }
 
     .signature {
         font-size: 1rem;

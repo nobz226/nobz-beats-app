@@ -383,7 +383,7 @@
     transition: all 0.3s ease;
     margin: 20px auto;
     border: none;
-    font-family: 'Agave';
+    font-family: var(--font-primary);
     cursor: pointer;
     display: flex;
     align-items: center;
