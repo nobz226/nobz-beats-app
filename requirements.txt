@@ -33,7 +33,7 @@ itsdangerous==2.2.0
 Jinja2==3.1.4
 joblib==1.4.2
 julius==0.2.7
-lameenc==1.7.0
+lameenc==1.8.1
 lazy_loader==0.4
 librosa==0.10.2.post1
 llvmlite==0.43.0
