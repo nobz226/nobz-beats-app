@@ -1,9 +1,10 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
+from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, session
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user, UserMixin
 from extensions import db
-from models import Track, User
-from forms import TrackForm
+from models import Track, User, Playlist
+from forms import TrackForm, RegistrationForm, PlaylistForm
 import os
+from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 from functools import wraps
@@ -452,6 +453,255 @@ def clear_unlikes(track_id):
     track.unlike_count = 0
     db.session.commit()
     return jsonify({'success': True})
+
+# User Registration
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if current_user.is_authenticated:
+        return redirect(url_for('index'))
+    
+    form = RegistrationForm()
+    if form.validate_on_submit():
+        hashed_password = generate_password_hash(form.password.data)
+        new_user = User(
+            username=form.username.data,
+            password=hashed_password,
+            is_admin=False
+        )
+        db.session.add(new_user)
+        db.session.commit()
+        
+        flash('Account created successfully! Please log in.', 'success')
+        return redirect(url_for('user_login'))
+    
+    latest_track = Track.query.order_by(Track.date_added.desc()).first()
+    return render_template('register.html', form=form, latest_track=latest_track)
+
+# User Login (separate from admin)
+@app.route('/login', methods=['GET', 'POST'])
+def user_login():
+    if current_user.is_authenticated:
+        return redirect(url_for('index'))
+    
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        user = User.query.filter_by(username=username).first()
+        
+        if user and check_password_hash(user.password, password):
+            login_user(user)
+            flash('Login successful!', 'success')
+            
+            # Redirect to playlists if they were trying to access a restricted page
+            next_page = request.args.get('next')
+            return redirect(next_page) if next_page else redirect(url_for('my_playlists'))
+        else:
+            flash('Invalid username or password.', 'danger')
+    
+    latest_track = Track.query.order_by(Track.date_added.desc()).first()
+    return render_template('user_login.html', latest_track=latest_track)
+
+# Playlist Routes
+
+@app.route('/playlists')
+@login_required
+def my_playlists():
+    """View all user's playlists"""
+    playlists = Playlist.query.filter_by(user_id=current_user.id).order_by(Playlist.updated_at.desc()).all()
+    latest_track = Track.query.order_by(Track.date_added.desc()).first()
+    return render_template('playlists.html', playlists=playlists, latest_track=latest_track)
+
+@app.route('/playlist/create', methods=['POST'])
+@login_required
+def create_playlist():
+    """Create a new playlist"""
+    name = request.form.get('name')
+    description = request.form.get('description', '')
+    
+    if not name:
+        return jsonify({'success': False, 'error': 'Playlist name is required'}), 400
+    
+    new_playlist = Playlist(
+        name=name,
+        description=description,
+        user_id=current_user.id
+    )
+    db.session.add(new_playlist)
+    db.session.commit()
+    
+    return jsonify({
+        'success': True,
+        'playlist_id': new_playlist.id,
+        'message': 'Playlist created successfully!'
+    })
+
+@app.route('/playlist/<int:playlist_id>')
+@login_required
+def view_playlist(playlist_id):
+    """View a specific playlist"""
+    playlist = Playlist.query.get_or_404(playlist_id)
+    
+    # Ensure user owns this playlist
+    if playlist.user_id != current_user.id:
+        flash('You do not have permission to view this playlist.', 'danger')
+        return redirect(url_for('my_playlists'))
+    
+    tracks = playlist.tracks.all()
+    latest_track = Track.query.order_by(Track.date_added.desc()).first()
+    return render_template('playlist_view.html', playlist=playlist, tracks=tracks, latest_track=latest_track)
+
+@app.route('/playlist/<int:playlist_id>/add/<int:track_id>', methods=['POST'])
+@login_required
+def add_to_playlist(playlist_id, track_id):
+    """Add a track to a playlist"""
+    playlist = Playlist.query.get_or_404(playlist_id)
+    track = Track.query.get_or_404(track_id)
+    
+    # Ensure user owns this playlist
+    if playlist.user_id != current_user.id:
+        return jsonify({'success': False, 'error': 'Permission denied'}), 403
+    
+    # Check if track is already in playlist
+    if track in playlist.tracks:
+        return jsonify({'success': False, 'error': 'Track already in playlist'}), 400
+    
+    playlist.tracks.append(track)
+    playlist.updated_at = datetime.utcnow()
+    db.session.commit()
+    
+    return jsonify({
+        'success': True,
+        'message': f'"{track.name}" added to "{playlist.name}"'
+    })
+
+@app.route('/playlist/<int:playlist_id>/remove/<int:track_id>', methods=['POST'])
+@login_required
+def remove_from_playlist(playlist_id, track_id):
+    """Remove a track from a playlist"""
+    playlist = Playlist.query.get_or_404(playlist_id)
+    track = Track.query.get_or_404(track_id)
+    
+    # Ensure user owns this playlist
+    if playlist.user_id != current_user.id:
+        return jsonify({'success': False, 'error': 'Permission denied'}), 403
+    
+    if track in playlist.tracks:
+        playlist.tracks.remove(track)
+        playlist.updated_at = datetime.utcnow()
+        db.session.commit()
+        return jsonify({
+            'success': True,
+            'message': f'"{track.name}" removed from playlist'
+        })
+    
+    return jsonify({'success': False, 'error': 'Track not in playlist'}), 400
+
+@app.route('/playlist/<int:playlist_id>/delete', methods=['POST'])
+@login_required
+def delete_playlist(playlist_id):
+    """Delete a playlist"""
+    playlist = Playlist.query.get_or_404(playlist_id)
+    
+    # Ensure user owns this playlist
+    if playlist.user_id != current_user.id:
+        return jsonify({'success': False, 'error': 'Permission denied'}), 403
+    
+    db.session.delete(playlist)
+    db.session.commit()
+    
+    return jsonify({
+        'success': True,
+        'message': 'Playlist deleted successfully'
+    })
+
+@app.route('/playlist/<int:playlist_id>/update', methods=['POST'])
+@login_required
+def update_playlist(playlist_id):
+    """Update playlist name and description"""
+    playlist = Playlist.query.get_or_404(playlist_id)
+    
+    # Ensure user owns this playlist
+    if playlist.user_id != current_user.id:
+        return jsonify({'success': False, 'error': 'Permission denied'}), 403
+    
+    name = request.form.get('name')
+    description = request.form.get('description', '')
+    
+    if name:
+        playlist.name = name
+        playlist.description = description
+        playlist.updated_at = datetime.utcnow()
+        db.session.commit()
+        return jsonify({
+            'success': True,
+            'message': 'Playlist updated successfully'
+        })
+    
+    return jsonify({'success': False, 'error': 'Playlist name is required'}), 400
+
+# Get user's playlists (for AJAX requests)
+@app.route('/api/playlists')
+@login_required
+def get_user_playlists():
+    """Get all playlists for the current user"""
+    playlists = Playlist.query.filter_by(user_id=current_user.id).order_by(Playlist.name).all()
+    return jsonify({
+        'success': True,
+        'playlists': [{
+            'id': p.id,
+            'name': p.name,
+            'track_count': p.tracks.count()
+        } for p in playlists]
+    })
+
+# Session-based temporary playlist for non-logged-in users
+@app.route('/temp-playlist/add/<int:track_id>', methods=['POST'])
+def add_to_temp_playlist(track_id):
+    """Add track to session-based temporary playlist"""
+    track = Track.query.get_or_404(track_id)
+    
+    if 'temp_playlist' not in session:
+        session['temp_playlist'] = []
+    
+    if track_id not in session['temp_playlist']:
+        session['temp_playlist'].append(track_id)
+        session.modified = True
+        return jsonify({
+            'success': True,
+            'message': f'"{track.name}" added to temporary playlist'
+        })
+    
+    return jsonify({'success': False, 'error': 'Track already in playlist'}), 400
+
+@app.route('/temp-playlist/remove/<int:track_id>', methods=['POST'])
+def remove_from_temp_playlist(track_id):
+    """Remove track from temporary playlist"""
+    if 'temp_playlist' in session and track_id in session['temp_playlist']:
+        session['temp_playlist'].remove(track_id)
+        session.modified = True
+        return jsonify({
+            'success': True,
+            'message': 'Track removed from temporary playlist'
+        })
+    
+    return jsonify({'success': False, 'error': 'Track not in playlist'}), 400
+
+@app.route('/temp-playlist')
+def view_temp_playlist():
+    """View temporary playlist"""
+    temp_track_ids = session.get('temp_playlist', [])
+    tracks = Track.query.filter(Track.id.in_(temp_track_ids)).all() if temp_track_ids else []
+    latest_track = Track.query.order_by(Track.date_added.desc()).first()
+    return render_template('temp_playlist.html', tracks=tracks, latest_track=latest_track)
+
+@app.route('/temp-playlist/clear', methods=['POST'])
+def clear_temp_playlist():
+    """Clear temporary playlist"""
+    session.pop('temp_playlist', None)
+    return jsonify({
+        'success': True,
+        'message': 'Temporary playlist cleared'
+    })
 
 if __name__ == '__main__':
     with app.app_context():

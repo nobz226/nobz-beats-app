@@ -101,9 +101,16 @@
         <a href="{{ url_for('audio.stem_separator') }}" class="menu-item"><i class="fas fa-layer-group"></i>Stem Separator</a>
         <a href="{{ url_for('audio.converter') }}" class="menu-item"><i class="fas fa-exchange-alt"></i>Audio Converter</a>
         <a href="{{ url_for('audio.analyze_audio') }}" class="menu-item"><i class="fas fa-wave-square"></i>Audio Analyzer</a>
-        {% if current_user.is_authenticated and current_user.is_admin %}
-            <a href="{{ url_for('admin_panel') }}" class="menu-item"><i class="fas fa-user-shield"></i>Admin Panel</a>
+        {% if current_user.is_authenticated %}
+            {% if current_user.is_admin %}
+                <a href="{{ url_for('admin_panel') }}" class="menu-item"><i class="fas fa-user-shield"></i>Admin Panel</a>
+            {% endif %}
+            <a href="{{ url_for('my_playlists') }}" class="menu-item"><i class="fas fa-list-music"></i>My Playlists</a>
             <a href="{{ url_for('logout') }}" class="menu-item"><i class="fas fa-sign-out-alt"></i>Logout</a>
+        {% else %}
+            <a href="{{ url_for('user_login') }}" class="menu-item"><i class="fas fa-sign-in-alt"></i>Login</a>
+            <a href="{{ url_for('register') }}" class="menu-item"><i class="fas fa-user-plus"></i>Sign Up</a>
+            <a href="{{ url_for('view_temp_playlist') }}" class="menu-item"><i class="fas fa-clock"></i>Temporary Playlist</a>
         {% endif %}
         <div class="menu-footer">
             <div class="social-icons">

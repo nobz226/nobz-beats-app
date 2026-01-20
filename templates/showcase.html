@@ -61,6 +61,10 @@
                 <i class="fas fa-thumbs-down"></i>
                 <span class="reaction-count unlike-count">{{ track.unlike_count or 0 }}</span>
             </button>
+            
+            <button class="playlist-btn" data-track-id="{{ track.id }}" data-track-name="{{ track.name }}" title="Add to playlist">
+                <i class="fas fa-plus"></i>
+            </button>
         </div>
     </div>
     {% if loop.last %}
@@ -68,6 +72,128 @@
     {% endif %}
     {% endfor %}
 </div>
+
+<!-- Playlist Modal -->
+<div id="playlistModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closePlaylistModal()">&times;</span>
+        <h2>Add to Playlist</h2>
+        <div id="playlistModalContent">
+            {% if current_user.is_authenticated %}
+                <div id="playlistsList"></div>
+                <button class="btn btn-secondary" onclick="showQuickCreatePlaylist()" style="margin-top: 1rem;">
+                    <i class="fas fa-plus"></i> Create New Playlist
+                </button>
+                <div id="quickCreatePlaylist" style="display: none; margin-top: 1rem;">
+                    <input type="text" id="quickPlaylistName" class="form-input" placeholder="Playlist name" style="margin-bottom: 0.5rem;">
+                    <button class="btn btn-primary" onclick="quickCreateAndAdd()">Create & Add</button>
+                    <button class="btn btn-secondary" onclick="hideQuickCreatePlaylist()">Cancel</button>
+                </div>
+            {% else %}
+                <p>You need to be logged in to save playlists permanently.</p>
+                <p>You can add tracks to a temporary playlist that will be cleared when you close your browser.</p>
+                <div style="margin-top: 1rem;">
+                    <button class="btn btn-secondary" onclick="addToTempPlaylistAndClose()">
+                        <i class="fas fa-clock"></i> Add to Temporary Playlist
+                    </button>
+                </div>
+                <div style="margin-top: 1rem;">
+                    <a href="{{ url_for('user_login') }}" class="btn btn-primary">
+                        <i class="fas fa-sign-in-alt"></i> Login
+                    </a>
+                    <a href="{{ url_for('register') }}" class="btn btn-primary">
+                        <i class="fas fa-user-plus"></i> Sign Up
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<style>
+.playlist-btn {
+    background: none;
+    border: none;
+    color: #00ffff;
+    cursor: pointer;
+    padding: 0.5rem;
+    font-size: 1.2rem;
+    transition: all 0.3s ease;
+}
+
+.playlist-btn:hover {
+    color: #00cccc;
+    transform: scale(1.1);
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+}
+
+.modal-content {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    margin: 10% auto;
+    padding: 2rem;
+    border: 1px solid rgba(0, 255, 255, 0.3);
+    border-radius: 10px;
+    width: 90%;
+    max-width: 500px;
+    position: relative;
+}
+
+.modal-content h2 {
+    color: #00ffff;
+    margin-bottom: 1rem;
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close:hover {
+    color: #00ffff;
+}
+
+.playlist-item {
+    padding: 0.75rem;
+    margin: 0.5rem 0;
+    background: rgba(0, 255, 255, 0.1);
+    border: 1px solid rgba(0, 255, 255, 0.2);
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.playlist-item:hover {
+    background: rgba(0, 255, 255, 0.2);
+    border-color: rgba(0, 255, 255, 0.4);
+}
+
+.playlist-item-name {
+    color: #fff;
+    font-weight: 500;
+}
+
+.playlist-item-count {
+    color: #888;
+    font-size: 0.9rem;
+}
+</style>
+
 {% endblock %}
 
 {% block extra_js %}
@@ -260,7 +386,141 @@
                 .catch(error => console.error('Error:', error));
             });
         });
+        
+        // Playlist button functionality
+        document.querySelectorAll('.playlist-btn').forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+                const trackId = this.getAttribute('data-track-id');
+                const trackName = this.getAttribute('data-track-name');
+                openPlaylistModal(trackId, trackName);
+            });
+        });
     });
+    
+    // Playlist modal functions
+    let currentTrackId = null;
+    let currentTrackName = null;
+    
+    function openPlaylistModal(trackId, trackName) {
+        currentTrackId = trackId;
+        currentTrackName = trackName;
+        
+        {% if current_user.is_authenticated %}
+        // Load user's playlists
+        fetch('/api/playlists')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const playlistsList = document.getElementById('playlistsList');
+                    if (data.playlists.length === 0) {
+                        playlistsList.innerHTML = '<p style="color: #888;">No playlists yet. Create one below!</p>';
+                    } else {
+                        playlistsList.innerHTML = data.playlists.map(playlist => `
+                            <div class="playlist-item" onclick="addToPlaylist(${playlist.id}, '${playlist.name}')">
+                                <span class="playlist-item-name">${playlist.name}</span>
+                                <span class="playlist-item-count">${playlist.track_count} tracks</span>
+                            </div>
+                        `).join('');
+                    }
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        {% endif %}
+        
+        document.getElementById('playlistModal').style.display = 'block';
+    }
+    
+    function closePlaylistModal() {
+        document.getElementById('playlistModal').style.display = 'none';
+        hideQuickCreatePlaylist();
+    }
+    
+    {% if current_user.is_authenticated %}
+    function addToPlaylist(playlistId, playlistName) {
+        fetch(`/playlist/${playlistId}/add/${currentTrackId}`, {
+            method: 'POST'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert(data.message);
+                closePlaylistModal();
+            } else {
+                alert(data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error adding track to playlist');
+        });
+    }
+    
+    function showQuickCreatePlaylist() {
+        document.getElementById('quickCreatePlaylist').style.display = 'block';
+    }
+    
+    function hideQuickCreatePlaylist() {
+        document.getElementById('quickCreatePlaylist').style.display = 'none';
+        document.getElementById('quickPlaylistName').value = '';
+    }
+    
+    function quickCreateAndAdd() {
+        const playlistName = document.getElementById('quickPlaylistName').value.trim();
+        if (!playlistName) {
+            alert('Please enter a playlist name');
+            return;
+        }
+        
+        const formData = new FormData();
+        formData.append('name', playlistName);
+        
+        fetch('/playlist/create', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Now add the track to the newly created playlist
+                addToPlaylist(data.playlist_id, playlistName);
+            } else {
+                alert(data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error creating playlist');
+        });
+    }
+    {% else %}
+    function addToTempPlaylistAndClose() {
+        fetch(`/temp-playlist/add/${currentTrackId}`, {
+            method: 'POST'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert(data.message);
+                closePlaylistModal();
+            } else {
+                alert(data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error adding track to temporary playlist');
+        });
+    }
+    {% endif %}
+    
+    // Close modal when clicking outside
+    window.onclick = function(event) {
+        const modal = document.getElementById('playlistModal');
+        if (event.target == modal) {
+            closePlaylistModal();
+        }
+    }
 </script>
 {% endblock %}
 
