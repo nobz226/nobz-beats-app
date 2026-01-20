@@ -344,57 +344,74 @@ document.addEventListener("DOMContentLoaded", () => {
     artworkElement.style.display = "block";
   };
 
-  // Track card play buttons
-  document.querySelectorAll(".play-track-btn").forEach((button, index) => {
-    button.addEventListener("click", () => {
-      stopAllArtworkSpinning();
-      currentTrackIndex = index;
-      const trackUrl = button.dataset.trackUrl;
-      const trackName = button.dataset.trackName;
-      const trackArtwork = button.dataset.trackArtwork;
-
-      player.audio.src = trackUrl;
-      player.trackName.textContent = trackName;
-      
-      // Only load and display artwork on desktop
-      if (!isMobileDevice() && trackArtwork) {
-        player.artworkImage.src = trackArtwork;
-        player.artworkImage.style.display = "block";
-        
-        // Ensure proper scaling and dimensions
-        player.artworkImage.style.width = "100%";
-        player.artworkImage.style.height = "100%";
-        player.artworkImage.style.objectFit = "contain";
-        player.artworkImage.style.borderRadius = "50%";
-        
-        if (player.artworkPlaceholder) {
-          player.artworkPlaceholder.style.display = "none";
-        }
+  // Function to attach play button listeners
+  const attachPlayButtonListeners = () => {
+    document.querySelectorAll(".play-track-btn").forEach((button, index) => {
+      // Remove existing listener if any (prevent duplicates)
+      const newButton = button.cloneNode(true);
+      if (button.parentNode) {
+        button.parentNode.replaceChild(newButton, button);
       }
-
-      // Show the player and unhide it when a track is loaded
-      player.playerContainer.classList.add("active");
-      player.playerContainer.classList.remove("hidden");
-      isPlayerHidden = false;
-      updateToggleButtonIcon();
-
-      // Update play button icon
-      player.playBtn.classList.add("playing");
-      player.playBtn.querySelector("i").classList.remove("fa-play");
-      player.playBtn.querySelector("i").classList.add("fa-pause");
-
-      player.audio.play().then(() => {
-        updateArtworkSpinning(true);
-      }).catch(error => {
-        console.log("Auto-play prevented by browser:", error);
-        // Still show the player even if autoplay is blocked
-        player.playerContainer.classList.add("active");
-      });
-      updatePlayerLayout();
-      storeTrackList();
-      saveState();
     });
-  });
+    
+    // Re-query after cloning
+    document.querySelectorAll(".play-track-btn").forEach((button, index) => {
+      button.addEventListener("click", () => {
+        stopAllArtworkSpinning();
+        currentTrackIndex = index;
+        const trackUrl = button.dataset.trackUrl;
+        const trackName = button.dataset.trackName;
+        const trackArtwork = button.dataset.trackArtwork;
+
+        player.audio.src = trackUrl;
+        player.trackName.textContent = trackName;
+        
+        // Only load and display artwork on desktop
+        if (!isMobileDevice() && trackArtwork) {
+          player.artworkImage.src = trackArtwork;
+          player.artworkImage.style.display = "block";
+          
+          // Ensure proper scaling and dimensions
+          player.artworkImage.style.width = "100%";
+          player.artworkImage.style.height = "100%";
+          player.artworkImage.style.objectFit = "contain";
+          player.artworkImage.style.borderRadius = "50%";
+          
+          if (player.artworkPlaceholder) {
+            player.artworkPlaceholder.style.display = "none";
+          }
+        }
+
+        // Show the player and unhide it when a track is loaded
+        player.playerContainer.classList.add("active");
+        player.playerContainer.classList.remove("hidden");
+        isPlayerHidden = false;
+        updateToggleButtonIcon();
+
+        // Update play button icon
+        player.playBtn.classList.add("playing");
+        player.playBtn.querySelector("i").classList.remove("fa-play");
+        player.playBtn.querySelector("i").classList.add("fa-pause");
+
+        player.audio.play().then(() => {
+          updateArtworkSpinning(true);
+        }).catch(error => {
+          console.log("Auto-play prevented by browser:", error);
+          // Still show the player even if autoplay is blocked
+          player.playerContainer.classList.add("active");
+        });
+        updatePlayerLayout();
+        storeTrackList();
+        saveState();
+      });
+    });
+  };
+
+  // Make attachPlayButtonListeners globally available for dynamic content
+  window.reattachPlayButtonListeners = attachPlayButtonListeners;
+
+  // Track card play buttons - initial attachment
+  attachPlayButtonListeners();
 
   // Play/Pause
   player.playBtn.addEventListener("click", () => {

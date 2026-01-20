@@ -14,6 +14,12 @@
                 </p>
             </div>
             <div class="header-actions">
+                <button class="btn btn-primary" onclick="playAllTracks()" {% if not tracks %}disabled{% endif %}>
+                    <i class="fas fa-play"></i> Play All
+                </button>
+                <button class="btn btn-primary" onclick="shuffleAndPlay()" {% if not tracks %}disabled{% endif %}>
+                    <i class="fas fa-random"></i> Shuffle
+                </button>
                 <a href="{{ url_for('my_playlists') }}" class="btn btn-secondary">
                     <i class="fas fa-arrow-left"></i> Back to Playlists
                 </a>
@@ -50,11 +56,11 @@
                         <td>{{ track.description or 'No description' }}</td>
                         <td>
                             <div class="track-actions">
-                                <button class="btn-icon play-btn" 
+                                <button class="btn-icon play-track-btn" 
                                         data-track-url="{{ url_for('static', filename='uploads/' + track.file) }}"
                                         data-track-name="{{ track.name }}"
                                         data-track-artwork="{{ url_for('static', filename='uploads/' + track.artwork) if track.artwork and track.artwork != 'No Artwork' else '' }}"
-                                        onclick="playTrackFromButton(this)"
+                                        data-track-artwork-secondary=""
                                         title="Play">
                                     <i class="fas fa-play"></i>
                                 </button>
@@ -204,13 +210,6 @@
 </style>
 
 <script>
-function playTrackFromButton(button) {
-    const trackUrl = button.getAttribute('data-track-url');
-    const trackName = button.getAttribute('data-track-name');
-    const trackArtwork = button.getAttribute('data-track-artwork');
-    playTrackInGlobalPlayer(trackUrl, trackName, trackArtwork);
-}
-
 async function removeFromPlaylistButton(button) {
     const playlistId = button.getAttribute('data-playlist-id');
     const trackId = button.getAttribute('data-track-id');
@@ -232,6 +231,38 @@ async function removeFromPlaylistButton(button) {
     } catch (error) {
         alert('Error removing track from playlist');
     }
+}
+
+function playAllTracks() {
+    const firstPlayButton = document.querySelector('.play-track-btn');
+    if (firstPlayButton) {
+        firstPlayButton.click();
+    }
+}
+
+function shuffleAndPlay() {
+    const playButtons = Array.from(document.querySelectorAll('.play-track-btn'));
+    if (playButtons.length === 0) return;
+    
+    // Shuffle the array
+    for (let i = playButtons.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [playButtons[i], playButtons[j]] = [playButtons[j], playButtons[i]];
+    }
+    
+    // Create shuffled track list
+    const shuffledTracks = playButtons.map(button => ({
+        url: button.dataset.trackUrl,
+        name: button.dataset.trackName,
+        artwork: button.dataset.trackArtwork,
+        artworkSecondary: button.dataset.trackArtworkSecondary || '',
+    }));
+    
+    // Store shuffled playlist in sessionStorage
+    sessionStorage.setItem('trackList', JSON.stringify(shuffledTracks));
+    
+    // Play first track
+    playButtons[0].click();
 }
 </script>
 {% endblock %}
