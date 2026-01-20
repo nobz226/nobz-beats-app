@@ -234,10 +234,20 @@ async function removeFromPlaylistButton(button) {
 }
 
 function playAllTracks() {
-    const firstPlayButton = document.querySelector('.play-track-btn');
-    if (firstPlayButton) {
-        firstPlayButton.click();
-    }
+    const playButtons = document.querySelectorAll('.play-track-btn');
+    if (playButtons.length === 0) return;
+    
+    // Store the full track list in sessionStorage
+    const tracks = Array.from(playButtons).map(button => ({
+        url: button.dataset.trackUrl,
+        name: button.dataset.trackName,
+        artwork: button.dataset.trackArtwork,
+        artworkSecondary: button.dataset.trackArtworkSecondary || '',
+    }));
+    sessionStorage.setItem('trackList', JSON.stringify(tracks));
+    
+    // Click the first play button
+    playButtons[0].click();
 }
 
 function shuffleAndPlay() {
@@ -264,5 +274,16 @@ function shuffleAndPlay() {
     // Play first track
     playButtons[0].click();
 }
+
+// Initialize play button functionality when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    // Re-attach play button listeners for playlist tracks
+    if (typeof window.reattachPlayButtonListeners === 'function') {
+        setTimeout(() => {
+            window.reattachPlayButtonListeners();
+            console.log('Play button listeners attached for playlist');
+        }, 100);
+    }
+});
 </script>
 {% endblock %}

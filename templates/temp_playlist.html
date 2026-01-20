@@ -321,10 +321,20 @@ async function clearTempPlaylist() {
 }
 
 function playAllTracks() {
-    const firstPlayButton = document.querySelector('.play-track-btn');
-    if (firstPlayButton) {
-        firstPlayButton.click();
-    }
+    const playButtons = document.querySelectorAll('.play-track-btn');
+    if (playButtons.length === 0) return;
+    
+    // Store the full track list in sessionStorage
+    const tracks = Array.from(playButtons).map(button => ({
+        url: button.dataset.trackUrl,
+        name: button.dataset.trackName,
+        artwork: button.dataset.trackArtwork,
+        artworkSecondary: button.dataset.trackArtworkSecondary || '',
+    }));
+    sessionStorage.setItem('trackList', JSON.stringify(tracks));
+    
+    // Click the first play button
+    playButtons[0].click();
 }
 
 function shuffleAndPlay() {

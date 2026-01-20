@@ -765,4 +765,141 @@ document.addEventListener("DOMContentLoaded", () => {
       // Don't set height to 0 or remove the animation
     });
   }
+  
+  // Playlist Panel Functionality
+  const playlistPanel = document.getElementById('playlist-panel');
+  const playlistBtn = document.querySelector('.global-playlist-btn');
+  const playlistCloseBtn = document.querySelector('.playlist-panel-close');
+  const playlistTracksContainer = document.querySelector('.playlist-panel-tracks');
+  const playlistEmptyState = document.querySelector('.playlist-panel-empty');
+  
+  console.log('Playlist elements:', {
+    panel: playlistPanel,
+    btn: playlistBtn,
+    closeBtn: playlistCloseBtn,
+    tracks: playlistTracksContainer,
+    empty: playlistEmptyState
+  });
+  
+  // Toggle playlist panel
+  function togglePlaylistPanel() {
+    console.log('Toggling playlist panel');
+    playlistPanel.classList.toggle('open');
+    playlistBtn.classList.toggle('active');
+    
+    // Update playlist content when opening
+    if (playlistPanel.classList.contains('open')) {
+      updatePlaylistPanel();
+    }
+  }
+  
+  // Update playlist panel with current tracks
+  function updatePlaylistPanel() {
+    if (trackList.length === 0) {
+      playlistEmptyState.style.display = 'flex';
+      playlistTracksContainer.style.display = 'none';
+    } else {
+      playlistEmptyState.style.display = 'none';
+      playlistTracksContainer.style.display = 'flex';
+      
+      // Populate tracks
+      playlistTracksContainer.innerHTML = trackList.map((track, index) => {
+        const isPlaying = index === currentTrackIndex;
+        return `
+          <div class="playlist-track-item ${isPlaying ? 'playing' : ''}" data-track-index="${index}">
+            <div class="playlist-track-number">${index + 1}</div>
+            <div class="playlist-track-info">
+              <div class="playlist-track-name">${track.name}</div>
+            </div>
+            <i class="playlist-track-icon fas ${isPlaying ? 'fa-volume-up' : 'fa-play'}"></i>
+          </div>
+        `;
+      }).join('');
+      
+      // Add click listeners to playlist items
+      document.querySelectorAll('.playlist-track-item').forEach(item => {
+        item.addEventListener('click', function() {
+          const index = parseInt(this.dataset.trackIndex);
+          playTrackAtIndex(index);
+        });
+      });
+    }
+  }
+  
+  // Play track at specific index
+  function playTrackAtIndex(index) {
+    if (index < 0 || index >= trackList.length) return;
+    
+    stopAllArtworkSpinning();
+    currentTrackIndex = index;
+    const track = trackList[index];
+    
+    player.audio.src = track.url;
+    player.trackName.textContent = track.name;
+    
+    // Only load and display artwork on desktop
+    if (!isMobileDevice() && track.artwork) {
+      player.artworkImage.src = track.artwork;
+      player.artworkImage.style.display = "block";
+      
+      // Ensure proper scaling and dimensions
+      player.artworkImage.style.width = "100%";
+      player.artworkImage.style.height = "100%";
+      player.artworkImage.style.objectFit = "contain";
+      player.artworkImage.style.borderRadius = "50%";
+      
+      if (player.artworkPlaceholder) {
+        player.artworkPlaceholder.style.display = "none";
+      }
+    }
+    
+    // Show the player and unhide it when a track is loaded
+    player.playerContainer.classList.add("active");
+    player.playerContainer.classList.remove("hidden");
+    isPlayerHidden = false;
+    updateToggleButtonIcon();
+    
+    // Update play button icon
+    player.playBtn.classList.add("playing");
+    player.playBtn.querySelector("i").classList.remove("fa-play");
+    player.playBtn.querySelector("i").classList.add("fa-pause");
+    
+    player.audio.play().then(() => {
+      updateArtworkSpinning(true);
+      updatePlaylistPanel(); // Update to show new playing track
+    }).catch(error => {
+      console.log("Auto-play prevented by browser:", error);
+    });
+    
+    updatePlayerLayout();
+    saveState();
+  }
+  
+  // Event listeners for playlist panel
+  if (playlistBtn) {
+    playlistBtn.addEventListener('click', togglePlaylistPanel);
+    console.log('Playlist button click listener attached');
+  } else {
+    console.error('Playlist button not found!');
+  }
+  
+  if (playlistCloseBtn) {
+    playlistCloseBtn.addEventListener('click', togglePlaylistPanel);
+  }
+  
+  // Update playlist panel when track changes
+  player.audio.addEventListener('play', () => {
+    if (playlistPanel && playlistPanel.classList.contains('open')) {
+      updatePlaylistPanel();
+    }
+  });
+  
+  // Close playlist panel when clicking outside
+  document.addEventListener('click', (e) => {
+    if (playlistPanel.classList.contains('open') && 
+        !playlistPanel.contains(e.target) && 
+        !playlistBtn.contains(e.target)) {
+      togglePlaylistPanel();
+    }
+  });
 });

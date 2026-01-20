@@ -49,6 +49,7 @@
             <button class="global-restart-btn" title="Restart"><i class="fas fa-redo-alt"></i></button>
             <button class="global-repeat-btn" title="Repeat"><i class="fas fa-sync-alt"></i></button>
             <button class="global-next-btn" title="Next Track"><i class="fas fa-step-forward"></i></button>
+            <button class="global-playlist-btn" title="Show Playlist"><i class="fas fa-list"></i></button>
         </div>
         
         <div class="global-player-info">
@@ -78,6 +79,25 @@
             <source src="" type="audio/mpeg">
             Your browser does not support the audio element.
         </audio>
+        
+        <!-- Playlist Panel -->
+        <div id="playlist-panel" class="playlist-panel">
+            <div class="playlist-panel-header">
+                <h3 class="playlist-panel-title">Now Playing</h3>
+                <button class="playlist-panel-close" title="Close Playlist">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="playlist-panel-content">
+                <div class="playlist-panel-empty">
+                    <i class="fas fa-music"></i>
+                    <p>No playlist active</p>
+                </div>
+                <div class="playlist-panel-tracks" style="display: none;">
+                    <!-- Tracks will be populated dynamically -->
+                </div>
+            </div>
+        </div>
     </div>
     
     <!-- Three-line Menu Toggle with Animation -->
