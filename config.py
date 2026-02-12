@@ -1,31 +1,19 @@
 import os
-from dotenv import load_dotenv
-
-# Load environment variables
-load_dotenv()
+import os
 
 class Config:
-    """Base configuration."""
-    SECRET_KEY = os.getenv('SECRET_KEY', 'your_secret_key')
-    SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URI', 'sqlite:///music.db')
-    SQLALCHEMY_TRACK_MODIFICATIONS = False
-    
+    """Minimal configuration for audio tools."""
+    SECRET_KEY = os.getenv('SECRET_KEY', 'change-me')
+
     # File upload settings
     UPLOAD_FOLDER = 'static/uploads'
     CONVERTED_FOLDER = 'static/converted'
-    
-    # API keys
-    TOGETHER_API_KEY = os.getenv('TOGETHER_API_KEY')
-    
 
-    
     # Session settings
     SESSION_TIMEOUT = 300  # 5 minutes in seconds
-    
+
     @staticmethod
     def init_app(app):
-        """Initialize application with this configuration."""
-        # Ensure required directories exist
         os.makedirs(Config.UPLOAD_FOLDER, exist_ok=True)
         os.makedirs(Config.CONVERTED_FOLDER, exist_ok=True)
 

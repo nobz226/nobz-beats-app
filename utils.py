@@ -18,10 +18,21 @@ def generate_unique_filename(original_filename):
     secure_name = secure_filename(original_filename)
     return file_uuid, f"{file_uuid}_{secure_name}"
 
+ALLOWED_AUDIO_EXTENSIONS = {'.mp3', '.wav', '.flac', '.m4a', '.aif', '.aiff', '.ogg', '.aac'}
+
+
 def save_uploaded_file(file_obj, upload_folder, original_filename=None):
-    """Save an uploaded file with a unique name and return the path."""
+    """Save an uploaded file with a unique name and return the path.
+
+    Validates the extension against ALLOWED_AUDIO_EXTENSIONS and raises
+    ValueError on unsupported types.
+    """
     if original_filename is None:
         original_filename = file_obj.filename
+
+    _, ext = os.path.splitext(original_filename.lower())
+    if ext not in ALLOWED_AUDIO_EXTENSIONS:
+        raise ValueError(f"Unsupported file extension: {ext}")
         
     file_uuid, unique_filename = generate_unique_filename(original_filename)
     file_path = os.path.join(upload_folder, unique_filename)
@@ -68,6 +79,8 @@ def analyze_audio_file(file_path):
                 'success': False,
                 'error': f"File is not readable: {file_path}"
             }
+
+
             
         # Load the audio file with librosa using a lower sample rate and mono
         print(f"Loading audio file: {file_path}")
@@ -261,6 +274,40 @@ def analyze_audio_file(file_path):
             'success': False,
             'error': f"Error analyzing audio: {str(e)}"
         }
+
+# --- System health checks ---
+
+def check_system_tools():
+    """Check availability of external tools (demucs, ffmpeg) and torch cache state.
+
+    Returns a dict with booleans and small diagnostics.
+    """
+    import shutil
+    from pathlib import Path
+
+    demucs_path = shutil.which('demucs')
+    ffmpeg_path = shutil.which('ffmpeg')
+
+    cache_dir = Path.home() / '.cache' / 'torch' / 'hub' / 'checkpoints'
+    cache_exists = cache_dir.exists() and cache_dir.is_dir()
+    cache_nonempty = False
+    cache_files = []
+    try:
+        if cache_exists:
+            cache_files = [p.name for p in cache_dir.iterdir() if p.is_file()]
+            cache_nonempty = len(cache_files) > 0
+    except Exception as e:
+        print(f"Error inspecting torch cache: {e}")
+
+    return {
+        'demucs_installed': bool(demucs_path),
+        'demucs_path': demucs_path or '',
+        'ffmpeg_installed': bool(ffmpeg_path),
+        'ffmpeg_path': ffmpeg_path or '',
+        'torch_cache_exists': cache_exists,
+        'torch_cache_nonempty': cache_nonempty,
+        'torch_cache_files': cache_files[:10]
+    }
 
 def convert_audio(input_path, output_path, output_format):
     """Convert audio file to specified format using ffmpeg."""

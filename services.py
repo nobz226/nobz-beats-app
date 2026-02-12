@@ -243,3 +243,64 @@ class StemSeparationService:
             import traceback
             traceback.print_exc()
             return {'success': False, 'error': str(e)} 
+
+# --- Convenience functional wrappers for minimal API ---
+
+def analyze_audio(input_path):
+    """Wrapper that analyzes an audio file and returns analysis results."""
+    from utils import analyze_audio_file
+    return analyze_audio_file(input_path)
+
+
+def convert_audio(input_path, target_format, out_dir):
+    """Convert an input file to target_format and place it in out_dir.
+    Returns the path to the converted file on success, raises on failure."""
+    import os
+    import uuid
+    from utils import convert_audio as _convert
+
+    base = os.path.splitext(os.path.basename(input_path))[0]
+    out_name = f"{base}_{uuid.uuid4().hex}.{target_format}"
+    out_path = os.path.join(out_dir, out_name)
+
+    success = _convert(input_path, out_path, target_format)
+    if not success:
+        raise RuntimeError(f"Conversion to {target_format} failed")
+    return out_path
+
+
+def separate_audio(input_path, output_dir, model='htdemucs'):
+    """Run the demucs CLI to separate stems and create a zip of resulting stems.
+    Returns path to the zip file.
+    Requires `demucs` be available in PATH and that the demucs model is installed.
+    """
+    import subprocess
+    import os
+    import zipfile
+
+    # Normalize model (treat empty string as default)
+    model = model or 'htdemucs'
+
+    # Ensure output directory exists
+    os.makedirs(output_dir, exist_ok=True)
+
+    cmd = ['demucs', '-n', model, '-o', output_dir, '--segment', '7', '--overlap', '0.1', input_path]
+
+    try:
+        proc = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        if proc.returncode != 0:
+            raise RuntimeError(f"Demucs failed (code {proc.returncode}): {proc.stderr.strip()}")
+    except FileNotFoundError:
+        raise RuntimeError("Demucs CLI not found. Please install demucs and ensure it's in PATH.")
+
+    # Zip any .wav/.mp3 files under output_dir
+    zip_path = os.path.join(output_dir, 'stems.zip')
+    with zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED) as zf:
+        for root, dirs, files in os.walk(output_dir):
+            for f in files:
+                if f.lower().endswith(('.wav', '.mp3')):
+                    full = os.path.join(root, f)
+                    arcname = os.path.relpath(full, output_dir)
+                    zf.write(full, arcname)
+
+    return zip_path

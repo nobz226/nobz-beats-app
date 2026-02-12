@@ -23,7 +23,7 @@ exit()
 
 ### 2️⃣ Start the App
 ```bash
-python app.py
+python audio_app.py
 ```
 
 ### 3️⃣ Try It Out!

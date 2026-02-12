@@ -82,7 +82,7 @@ If you already have a database and want to add the playlist feature:
 
 1. Start the application:
    ```bash
-   python app.py
+   python audio_app.py
    ```
 
 2. Navigate to: `http://localhost:5002/register`

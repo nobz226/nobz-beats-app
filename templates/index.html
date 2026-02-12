@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Nobz Beats — Audio API</title>
+    <style>
+      body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Roboto,Helvetica,Arial;color:#111;background:#fff;margin:0;padding:32px}
+      .wrap{max-width:900px;margin:0 auto}
+      h1{font-size:28px;margin-bottom:4px}
+      p.lead{color:#444}
+      pre{background:#f6f6f8;padding:12px;border-radius:6px;overflow:auto}
+      .endpoint{border:1px solid #eee;padding:18px;border-radius:8px;margin-top:18px}
+      .badge{display:inline-block;background:#222;color:#fff;padding:4px 8px;border-radius:6px;font-size:12px;margin-right:8px}
+      footer{margin-top:36px;color:#666;font-size:13px}
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <h1>Nobz Beats — Audio API</h1>
+      <p class="lead">This repository exposes three audio tools as a minimal REST API: <strong>Analyzer</strong>, <strong>Converter</strong>, and <strong>Stem Separator</strong>. No UI forms here—use curl or your own client to upload audio files.</p>
+
+      <div class="endpoint">
+        <div><span class="badge">GET</span><strong>/audio/test</strong></div>
+        <p>Simple health/test endpoint.</p>
+        <pre>curl http://localhost:5002/audio/test</pre>
+      </div>
+
+      <div class="endpoint">
+        <div><span class="badge">POST</span><strong>/audio/analyze</strong></div>
+        <p>Analyze an uploaded audio file (detect tempo & key). multipart form field: <code>file</code></p>
+        <pre>curl -F "file=@/path/to/song.mp3" http://localhost:5002/audio/analyze</pre>
+      </div>
+
+      <div class="endpoint">
+        <div><span class="badge">POST</span><strong>/audio/convert</strong></div>
+        <p>Convert an uploaded file to a format. multipart form field: <code>file</code>, form field: <code>format</code> (mp3|wav|flac)</p>
+        <pre>curl -F "file=@/path/to/song.wav" -F "format=mp3" http://localhost:5002/audio/convert --output converted.mp3</pre>
+      </div>
+
+      <div class="endpoint">
+        <div><span class="badge">POST</span><strong>/audio/separate</strong></div>
+        <p>Run stem separation (Demucs). multipart form field: <code>file</code>. Optional form field: <code>model</code> (defaults to <code>htdemucs</code>).</p>
+        <pre>curl -F "file=@/path/to/song.mp3" -F "model=htdemucs" http://localhost:5002/audio/separate --output stems.zip</pre>
+      </div>
+
+      <footer>
+        <p>Notes: Demucs and FFmpeg must be installed on the host. See <code>requirements.txt</code> and README for details.</p>
+      </footer>
+    </div>
+  </body>
+</html>

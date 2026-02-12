@@ -1,5 +1,7 @@
 # NOBZ BEATS APP
 
+> NOTE: This repository has been stripped down to include only the audio tools (analyzer, converter, stem separator). Other features (UI, auth, playlists, AI chat) have been removed.
+
 > *Where Music Production Meets Innovation*
 > 
 > *This is a project built using a combination of AI and handwritten code and is still a work in progress.*
@@ -147,7 +149,7 @@ flask shell
 
 **6. Run the application**
 ```bash
-python app.py
+python audio_app.py
 ```
 
 **7. Access the application**

@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Nobz Beats — Audio Tools</title>
+    <style>
+      body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;color:#111;background:#fff;margin:0;padding:24px}
+      .wrap{max-width:980px;margin:0 auto}
+      h1{font-size:28px;margin-bottom:4px}
+      .col{display:flex;gap:18px}
+      .card{flex:1;border:1px solid #eee;padding:16px;border-radius:8px;background:#fafafa}
+      pre{background:#f6f6f8;padding:10px;border-radius:6px}
+      label{display:block;margin-bottom:8px;font-weight:600}
+      .small{font-size:13px;color:#555}
+      button{display:inline-block;background:#111;color:#fff;padding:8px 12px;border-radius:6px;border:none;cursor:pointer}
+      .result{margin-top:12px;padding:10px;background:#fff;border-radius:6px;border:1px solid #eee}
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <h1>Nobz Beats — Audio Tools</h1>
+      <p class="small">Use the forms below to analyze, convert or separate audio. Files are sent to the server and the results are shown or downloaded.</p>
+
+      <div class="col" style="margin-top:18px">
+        <div class="card">
+          <h3>Analyzer</h3>
+          <p class="small">Detect tempo (BPM) and key.</p>
+          <form id="analyzeForm">
+            <label>Audio file <input type="file" name="file" accept="audio/*" required></label>
+            <button type="submit">Analyze</button>
+          </form>
+          <div id="analyzeResult" class="result" aria-live="polite"></div>
+        </div>
+
+        <div class="card">
+          <h3>Converter</h3>
+          <p class="small">Convert to MP3 / WAV / FLAC.</p>
+          <form id="convertForm">
+            <label>Audio file <input type="file" name="file" accept="audio/*" required></label>
+            <label>Format
+              <select name="format">
+                <option value="mp3">MP3</option>
+                <option value="wav">WAV</option>
+                <option value="flac">FLAC</option>
+              </select>
+            </label>
+            <button type="submit">Convert & Download</button>
+          </form>
+          <div id="convertResult" class="result"></div>
+        </div>
+
+        <div class="card">
+          <h3>Stem Separator</h3>
+          <p class="small">Run Demucs to extract stems (zip download).</p>
+          <form id="separateForm">
+            <label>Audio file <input type="file" name="file" accept="audio/*" required></label>
+            <label>Model (optional) <input name="model" placeholder="htdemucs"></label>
+            <button type="submit">Separate & Download</button>
+          </form>
+          <div id="separateResult" class="result"></div>
+        </div>
+      </div>
+
+      <div id="systemStatus" class="card" style="margin-bottom:18px">
+        <h3>System status</h3>
+        <div id="systemStatusBody" class="small">Checking system (Demucs, FFmpeg, Torch cache)...</div>
+      </div>
+      <p style="margin-top:0" class="small">Note: Processing may take several seconds (or minutes for stem separation). Demucs/FFmpeg must be installed on the server.</p>
+
+    </div>
+    <script src="/static/js/tools.js"></script>
+  </body>
+</html>

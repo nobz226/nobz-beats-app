@@ -88,7 +88,7 @@ flask shell
 >>> exit()
 
 # Run
-python app.py  # Runs on http://localhost:5002 (not 5000!)
+python audio_app.py  # Runs on http://localhost:5002 (not 5000!)
 ```
 
 ### Database Migrations
