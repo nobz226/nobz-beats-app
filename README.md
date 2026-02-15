@@ -201,11 +201,3 @@ Contact and further help
 
 If you run into problems, open an issue in the repository with details about your environment, the commands you ran, and the errors you saw. Include `python --version`, `pip freeze` output, and `ffmpeg -version` where relevant.
 
-What I can do next
--------------------
-
-- Make conversion subprocess invocation safer (remove `shell=True`) and unify conversion helpers.
-- Add `MAX_CONTENT_LENGTH` and file-size validations to endpoints.
-- Increase or make configurable the cleanup delay for converted files.
-
-If you want me to implement any of the above changes now, tell me which one to start with.
