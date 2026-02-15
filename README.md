@@ -194,7 +194,7 @@ Contributions are welcome. Suggested steps:
 License
 -------
 
-This project is licensed under the MIT License. See the `LICENSE` file in the repository root for the full text.
+This project is licensed under the MIT License. See the `LICENSE.md` file in the repository root for the full text.
 
 Summary: Permission is granted, free of charge, to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, subject to including the copyright and permission notice.
 
