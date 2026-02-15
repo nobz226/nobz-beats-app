@@ -6,9 +6,6 @@ from routes import register_blueprints
 
 # Minimal Flask app focused on audio tools: analyzer, converter, separator
 
-# Authentication decorators removed (project is audio-only)
-
-# Environment, DB, and auth removed for stripped-down project
 app = Flask(__name__)
 
 # Load configuration (default)
@@ -24,65 +21,6 @@ ensure_directory_exists(app.config['CONVERTED_FOLDER'])
 
 
 # Routes
-
-
-# session cleanup removed - sessions and session-based cleanup are not used in this audio-only project
-# guides route removed - documentation/chat UI removed
-
-# chat API removed - AI chat integration stripped out
-    
-# chat removed - AI integration stripped
-
-# index removed - home UI removed (audio API only)
-
-# about route removed - UI removed
-
-# showcase removed - UI removed
-
-# Admin routes removed - project only exposes audio endpoints
-# (admin dashboard, user accounts and playlist features have been stripped)
-
-# Admin panel removed. Admin functionality is intentionally stripped in this audio-only project.
-
-# download_tracks removed - admin downloads are no longer part of the stripped project.
-
-# delete_tracks removed - admin deletion is removed from the stripped project.
-
-# logout removed - user account system stripped out
-
-# remove_artwork removed - artwork management removed from stripped project.
-
-# like_track removed - engagement features removed from stripped project.
-
-# unlike_track removed - engagement features removed from stripped project.
-
-# clear_likes removed - engagement features removed from stripped project.
-
-# clear_unlikes removed - engagement features removed from stripped project.
-
-# User registration removed - user accounts stripped from project.
-
-# User login removed - no user login for stripped project.
-
-# Playlist Routes
-
-# Playlist routes removed - playlists are not part of the stripped project.
-
-# create_playlist removed - playlists removed from project.
-
-# view_playlist removed - playlists removed from project.
-
-# add_to_playlist removed - playlist functionality removed.
-
-# remove_from_playlist removed - playlist functionality removed.
-
-# delete_playlist removed - playlist functionality removed.
-
-# update_playlist removed - playlist functionality removed.
-
-# get_user_playlists removed - playlists API removed.
-
-# Session-based temporary playlists removed - stripped project
 
 # Root landing page (simple static docs)
 @app.route('/')
