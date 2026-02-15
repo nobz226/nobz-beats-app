@@ -1,344 +1,211 @@
-# NOBZ BEATS APP
+# NOBZ BEATS - Audio Tools API
 
-> NOTE: This repository has been stripped down to include only the audio tools (analyzer, converter, stem separator). Other features (UI, auth, playlists, AI chat) have been removed.
+This repository provides a small, self-contained Flask-based API exposing three audio tools useful for building audio applications:
 
-> *Where Music Production Meets Innovation*
-> 
-> *This is a project built using a combination of AI and handwritten code and is still a work in progress.*
+- Audio analysis (tempo/BPM and musical key detection)
+- Audio format conversion (MP3, WAV, FLAC)
+- Stem separation (vocals, drums, bass, melody) using Demucs
 
-<div align="center">
-  <img src="static/images/bg3.png" alt="Music Production Toolkit" width="100%"/>
-  <h1 style="position: relative; margin-top: -80px; color: #ffffff; text-shadow: 0 0 10px #ff00ff, 0 0 20px #00ffff; font-size: 3em; font-weight: 800;">NOBZ BEATS</h1>
-</div>
+This project is intended to be an open-source developer-focused API that other applications can call to integrate audio processing features. Anyone may download, modify, and redistribute this code according to the license (see the `License` section).
 
-<div align="center">
-  
-  [![YouTube](https://img.shields.io/badge/YouTube-FF0000?style=for-the-badge&logo=youtube&logoColor=white)](https://www.youtube.com/@nobz_beats7894)
-  [![SoundCloud](https://img.shields.io/badge/SoundCloud-FF3300?style=for-the-badge&logo=soundcloud&logoColor=white)](https://soundcloud.com/user-621182531)
-  
-</div>
+Contents
+- Overview
+- Requirements
+- Quick start (macOS / Linux)
+- Configuration
+- Running the API
+- Endpoints and examples
+- File lifecycle and cleanup
+- Development notes and recommendations
+- Troubleshooting
+- Security considerations
+- Contributing and License
 
----
+Overview
+--------
 
-## Overview
+The codebase is organized with a clear separation of concerns:
 
-NOBZ BEATS APP is a comprehensive music production web application that combines audio processing tools, track showcase capabilities, and AI-powered production assistance. Built with Flask and modern web technologies, this application provides producers and music enthusiasts with professional-grade tools for audio analysis, stem separation, format conversion, and more.
+- `app.py` — Main Flask application that registers routes and blueprints.
+- `routes/audio.py` — Blueprint exposing the HTTP API endpoints for audio tools.
+- `services.py` — Service-layer helpers and higher-level wrappers.
+- `utils.py` — File I/O, audio analysis, FFmpeg-based conversion, health checks.
+- `config.py` — Basic runtime configuration (upload and converted folders).
 
----
+Requirements
+------------
 
-## Features
+Python dependencies are listed in `requirements.txt`. This project also depends on system tools:
 
-### Music Showcase
-- Browse and play original beats and remixes
-- Responsive audio player with vinyl spinning animation
-- Track likes and play count tracking
-- Global audio player with visualizer
-- Upload and manage tracks through admin panel
+- Python 3.8 or newer
+- System `ffmpeg` (install via `brew install ffmpeg` on macOS)
+- Demucs (either Python package or CLI; see notes below)
 
-### Audio Analysis
-- Analyze audio files to determine key and tempo
-- Instant BPM and key detection using librosa
-- Supports multiple audio formats (MP3, WAV, FLAC)
-- Accurate musical key detection for harmonic mixing
+Note on PyTorch and Demucs:
+- `demucs` and `torch` may require platform-specific wheels. On macOS, you may want to install a compatible PyTorch wheel for CPU or MPS. If you plan to run stem separation locally, follow Demucs and PyTorch install instructions for your platform.
 
-### Stem Separator
-- Split tracks into separate stems (vocals, drums, bass, melody)
-- Download isolated components for remixing
-- Powered by Demucs high-quality audio separation model
-- Professional-grade stem extraction for production workflows
+Quick start (macOS / Linux)
+---------------------------
 
-### Format Converter
-- Convert audio files between different formats (MP3, WAV, FLAC)
-- Simple drag-and-drop interface
-- Fast processing with automatic download
-- High-quality conversion using FFmpeg
+1. Clone the repository:
 
-### AI Production Assistant
-- Interactive AI chatbot (Alex) for music production advice
-- Powered by LLaMA 3.3 70B via Together API
-- Instant answers to music production questions
-- Tips on beatmaking, mixing, and music theory
-- Context-aware responses based on production knowledge
-
-### Design Features
-- Responsive design for mobile and desktop
-- Custom vinyl loading animation
-- Dark theme optimized for producers
-- Modern UI with smooth animations
-- Global audio player that persists across pages
-
----
-
-## Tech Stack
-
-<div align="center">
-  
-  ![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
-  ![Flask](https://img.shields.io/badge/Flask-000000?style=for-the-badge&logo=flask&logoColor=white)
-  ![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
-  ![SQLite](https://img.shields.io/badge/SQLite-07405E?style=for-the-badge&logo=sqlite&logoColor=white)
-  
-</div>
-
-### Backend
-- **Framework**: Flask (Python 3.8+)
-- **Database**: SQLite with SQLAlchemy ORM
-- **Authentication**: Flask-Login for user management
-- **Audio Processing**:
-  - librosa - Advanced audio analysis
-  - demucs - AI-powered stem separation
-  - FFmpeg - Professional audio format conversion
-- **AI Integration**: LLaMA 3.3 70B via Together API
-
-### Frontend
-- **JavaScript**: Vanilla JavaScript for client-side logic
-- **CSS**: Custom stylesheets with modern animations
-- **Design**: Responsive mobile-first approach
-- **Audio Player**: Custom global audio player with visualizer
-
-### Architecture
-- **Blueprint-based routing** for modular organization
-- **Service layer pattern** for audio processing operations
-- **Configuration management** with environment-specific settings
-- **Session-based file management** with automatic cleanup
-
----
-
-## Installation
-
-### Prerequisites
-- Python 3.8 or higher
-- FFmpeg installed and available in system PATH
-- Together API key for AI features
-
-### Setup Instructions
-
-**1. Clone the repository**
 ```bash
-git clone https://github.com/nobz226/nobz-beats-app.git
-cd nobz-beats-app
+git clone https://github.com/your/repo.git
+cd repo
 ```
 
-**2. Create and activate a virtual environment**
+2. Create and activate a virtual environment:
+
 ```bash
 python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+source venv/bin/activate
 ```
 
-**3. Install dependencies**
+3. Install Python dependencies:
+
 ```bash
 pip install -r requirements.txt
 ```
 
-**4. Set up environment variables**
+4. Install system dependencies (macOS example):
 
-Create a `.env` file in the project root:
-```
-TOGETHER_API_KEY=your_together_api_key_here
-ADMIN_USER=your_admin_username
-ADMIN_PASSWORD=your_admin_password
-```
-
-**5. Initialize the database**
 ```bash
-flask shell
->>> from app import db
->>> db.create_all()
->>> exit()
+# install ffmpeg
+brew install ffmpeg
+
+# optional: follow Demucs installation docs; you can install the demucs pip package
+pip install demucs
 ```
 
-**6. Run the application**
+5. Start the API:
+
 ```bash
-python audio_app.py
+python app.py
 ```
 
-**7. Access the application**
+By default the Flask app in this repository runs with `app.run(..., port=5002)`; the server will listen on port `5002` when started this way.
 
-Open your browser and navigate to `http://localhost:5000`
+Configuration
+-------------
 
----
+Basic runtime settings are in `config.py`:
 
-## Project Structure
+- `UPLOAD_FOLDER` — where uploaded files are saved (default: `static/uploads`)
+- `CONVERTED_FOLDER` — where converted or generated files are stored (default: `static/converted`)
+- `SESSION_TIMEOUT` — session timeout value used by the original app (may be unused in the stripped API)
 
-```
-nobz-beats-app/
-│
-├── app.py                    # Main application file with core routes
-├── config.py                 # Configuration settings for different environments
-├── extensions.py             # Flask extensions initialization
-├── forms.py                  # Flask-WTF form classes
-├── models.py                 # Database models (User, Track)
-├── services.py               # Audio processing services
-├── utils.py                  # Utility functions for file handling
-├── requirements.txt          # Python dependencies
-├── .env                      # Environment variables (create this)
-│
-├── routes/                   # Blueprint routes (modular routing)
-│   └── ...
-│
-├── static/                   # Static files
-│   ├── css/                  # Stylesheets
-│   │   ├── base.css          # Base styles
-│   │   ├── hero.css          # Hero section styles
-│   │   ├── navigation.css    # Navigation styles
-│   │   ├── audio-player.css  # Audio player styles
-│   │   └── ...               # Other style files
-│   ├── js/                   # JavaScript files
-│   ├── fonts/                # Custom fonts
-│   ├── images/               # Images and graphics
-│   ├── uploads/              # Uploaded audio files
-│   └── converted/            # Processed audio files
-│
-├── templates/                # HTML templates
-│   ├── base.html             # Base template with global player
-│   ├── home.html             # Homepage
-│   ├── about.html            # About page
-│   ├── showcase.html         # Track showcase
-│   ├── analyzer.html         # Audio analysis tool
-│   ├── separator.html        # Stem separator tool
-│   ├── converter.html        # Format converter tool
-│   ├── guides.html           # Production guides with AI chatbot
-│   └── admin.html            # Admin panel
-│
-└── instance/                 # Instance-specific files
-    └── app.db                # SQLite database (generated)
+You can edit `config.py` to change these directories, or override settings on application startup by modifying `app.config`.
+
+Running the API
+---------------
+
+Start the app as shown in Quick start. Once running, the following endpoints are available (all under the `/audio` blueprint):
+
+- `GET /audio/test` — simple health endpoint for the blueprint
+- `POST /audio/analyze` — analyze an uploaded audio file
+- `POST /audio/convert` — convert an uploaded audio file to a target format
+- `POST /audio/separate` — perform stem separation on an uploaded audio file
+
+There is also a general health endpoint at `/api/health` which returns diagnostics about external tools.
+
+API: endpoints and examples
+--------------------------
+
+All `POST` endpoints accept multipart form uploads. Below are cURL examples.
+
+1) Analyze audio (tempo and key)
+
+```bash
+curl -X POST "http://localhost:5002/audio/analyze" \
+  -F "file=@/path/to/audio.mp3"
 ```
 
----
+Successful response (JSON):
 
-## Usage Guide
+```json
+{ "success": true, "analysis": { "success": true, "tempo": 120, "key": "Em" } }
+```
 
-### Audio Analysis
-1. Navigate to the "Audio Analyzer" page
-2. Upload an audio file (MP3, WAV, or FLAC)
-3. Click "Analyze"
-4. View the detected BPM and musical key
-5. Use this information for harmonic mixing or tempo matching
+2) Convert audio (format conversion)
 
-### Stem Separation
-1. Go to the "Stem Separator" page
-2. Upload a complete song file
-3. Click "Separate Stems"
-4. Wait for processing (this may take a few minutes)
-5. Download individual stems (vocals, drums, bass, melody)
-6. Use stems for remixing or sampling
+```bash
+curl -X POST "http://localhost:5002/audio/convert" \
+  -F "file=@/path/to/audio.wav" \
+  -F "format=mp3"
+```
 
-### Format Conversion
-1. Access the "Format Converter" page
-2. Upload an audio file
-3. Select the desired output format (MP3, WAV, or FLAC)
-4. Click "Convert"
-5. Download the converted file automatically
+The endpoint returns the converted file as a download (`Content-Disposition: attachment`).
 
-### AI Production Guide
-1. Open the "Production Guides" page
-2. Type a question about music production in the chat
-3. Receive instant guidance from Alex, the AI production assistant
-4. Use suggested topics or ask custom questions
-5. Get advice on beatmaking, mixing, mastering, and music theory
+3) Separate stems (Demucs)
 
-### Track Showcase
-1. Browse available tracks on the "Showcase" page
-2. Click on any track to play it in the global audio player
-3. Like tracks to show appreciation
-4. View play counts and popularity metrics
+```bash
+curl -X POST "http://localhost:5002/audio/separate" \
+  -F "file=@/path/to/song.mp3" \
+  -F "model=htdemucs"   # optional — defaults to htdemucs
+```
 
----
+This endpoint runs stem separation and returns a ZIP file containing stems (if the `separate_audio` helper is used). Stem separation may be slow (minutes) depending on model and hardware.
 
-## Admin Features
+File lifecycle and cleanup
+--------------------------
 
-### Authentication
-- Secure login system using Flask-Login
-- Password hashing with Werkzeug security
-- Admin-only access to management features
+Uploaded files are saved into the `UPLOAD_FOLDER` with UUID-prefixed names. Converted or generated files are saved under `CONVERTED_FOLDER`.
 
-### Track Management
-- Upload new tracks with custom artwork
-- Edit track information (name, description)
-- Delete tracks from the showcase
-- Manage the complete track library
-- View track statistics (plays, likes)
+The code schedules cleanup of temporary files. Be aware that the current implementation schedules some files for deletion after a short delay; if you need to keep outputs, adjust the cleanup policy in `services.py` or `utils.py`.
 
-### File Management
-- Automatic file handling and storage
-- Secure filename processing
-- Session-based cleanup for temporary files
+Development notes and recommendations
+-----------------------------------
 
----
+- Consolidate conversion logic: There are two conversion helper implementations in the repository. One (`utils.convert_audio`) invokes FFmpeg via subprocess, and another wrapper exists in `services.py`. Consider unifying them into a single well-documented function.
+- Use safe subprocess invocation: avoid `shell=True` and prefer argument lists with `subprocess.run([...], check=True)` to prevent shell injection and quoting issues.
+- Demucs: choose either the CLI invocation or the Python API and standardize output directories and filenames for predictability.
+- Add upload size limits: set `app.config['MAX_CONTENT_LENGTH']` to protect the server from very large uploads.
+- For production: run behind a WSGI server (Gunicorn / uWSGI) and add HTTPS/authorization if the API will be publicly accessible.
 
-## API Integration
+Troubleshooting
+---------------
 
-### Together AI API
-The application integrates with the Together AI API to provide production assistance through the LLaMA 3.3 70B model. The AI assistant is configured with:
-- Music production knowledge base
-- Context-aware responses
-- Streaming support for real-time interaction
+- If `ffmpeg` is not found: install it system-wide (`brew install ffmpeg` on macOS).
+- If `demucs` errors or model files are missing: install or download the required Demucs model weights per Demucs documentation.
+- PyTorch installation: installing the correct `torch` wheel for your platform/GPU is critical. Refer to https://pytorch.org/get-started/locally/ for platform-specific instructions.
 
----
+Security considerations
+-----------------------
 
-## Contributing
+This project is a developer API and is intentionally minimal. Before exposing it publicly, consider:
 
-Contributions are welcome! Here's how you can help:
+- Authentication and authorization (API keys, OAuth, or JWT)
+- Rate limiting to prevent abuse
+- Strict upload size limits and timeouts
+- Input validation — the code currently saves uploaded files and relies on `ALLOWED_AUDIO_EXTENSIONS` but more checks (MIME type, scanning) can help
+- Error handling — do not expose stack traces in production responses; log them securely instead
+- Run the app in a sandboxed environment or container if you process untrusted audio
+
+Contributing
+------------
+
+Contributions are welcome. Suggested steps:
 
 1. Fork the repository
-2. Create a feature branch: `git checkout -b feature/amazing-feature`
-3. Make your changes and test thoroughly
-4. Commit your changes: `git commit -m 'Add amazing feature'`
-5. Push to the branch: `git push origin feature/amazing-feature`
-6. Open a pull request with a clear description
+2. Create a feature branch
+3. Add tests and documentation for changes
+4. Open a pull request with a clear description of your changes
 
-### Guidelines
-- Follow the existing code style
-- Add comments for complex logic
-- Test all features before submitting
-- Update documentation for new features
+License
+-------
 
----
+This repository is intended to be open source. Add a `LICENSE` file to declare a license (MIT, Apache-2.0, etc.). If you want this project to be MIT-licensed, create a `LICENSE` file containing the MIT license text.
 
-## Future Enhancements
+Contact and further help
+------------------------
 
-- User account system with personalized playlists
-- Advanced audio effects and processing
-- Real-time collaboration features
-- Mobile app development
-- Integration with major streaming platforms
-- Enhanced AI features with voice interaction
-- Community features and social sharing
+If you run into problems, open an issue in the repository with details about your environment, the commands you ran, and the errors you saw. Include `python --version`, `pip freeze` output, and `ffmpeg -version` where relevant.
 
----
+What I can do next
+-------------------
 
-## License
+- Make conversion subprocess invocation safer (remove `shell=True`) and unify conversion helpers.
+- Add `MAX_CONTENT_LENGTH` and file-size validations to endpoints.
+- Increase or make configurable the cleanup delay for converted files.
 
-This project is licensed under the MIT License - see the LICENSE file for details.
-
----
-
-## Connect With Me
-
-<div align="center">
-  
-  [![YouTube](https://img.shields.io/badge/YouTube-FF0000?style=for-the-badge&logo=youtube&logoColor=white)](https://www.youtube.com/@nobz_beats7894)
-  [![SoundCloud](https://img.shields.io/badge/SoundCloud-FF3300?style=for-the-badge&logo=soundcloud&logoColor=white)](https://soundcloud.com/user-621182531)
-  
-</div>
-
----
-
-## Acknowledgments
-
-- [Demucs](https://github.com/facebookresearch/demucs) - Facebook Research's stem separation technology
-- [librosa](https://librosa.org/) - Python library for audio analysis
-- [LLaMA](https://ai.meta.com/llama/) - Meta's large language model for AI features
-- [Together](https://www.together.ai/) - AI API services for production assistant
-- [Flask](https://flask.palletsprojects.com/) - Web framework for Python
-- [FFmpeg](https://ffmpeg.org/) - Complete audio/video processing solution
-
----
-
-<div align="center">
-  
-  ### Made with passion by NOBZ BEATS
-  
-  *Empowering music producers with cutting-edge tools and AI assistance*
-  
-</div>
+If you want me to implement any of the above changes now, tell me which one to start with.

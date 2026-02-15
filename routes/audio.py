@@ -12,6 +12,10 @@ def analyze_endpoint():
         return jsonify({'success': False, 'error': 'No file provided'}), 400
 
     audio_file = request.files['file']
+    # Enforce per-request size check if present
+    max_size = current_app.config.get('MAX_CONTENT_LENGTH')
+    if request.content_length and max_size and request.content_length > max_size:
+        return jsonify({'success': False, 'error': 'Uploaded file is too large'}), 413
     try:
         file_uuid, input_path = save_uploaded_file(audio_file, current_app.config['UPLOAD_FOLDER'])
     except ValueError as ve:
@@ -33,6 +37,9 @@ def convert_endpoint():
 
     out_format = request.form['format'].lower()
     audio_file = request.files['file']
+    max_size = current_app.config.get('MAX_CONTENT_LENGTH')
+    if request.content_length and max_size and request.content_length > max_size:
+        return jsonify({'success': False, 'error': 'Uploaded file is too large'}), 413
 
     try:
         file_uuid, input_path = save_uploaded_file(audio_file, current_app.config['UPLOAD_FOLDER'])
@@ -57,6 +64,9 @@ def separate_endpoint():
     if not model:
         model = 'htdemucs'
     audio_file = request.files['file']
+    max_size = current_app.config.get('MAX_CONTENT_LENGTH')
+    if request.content_length and max_size and request.content_length > max_size:
+        return jsonify({'success': False, 'error': 'Uploaded file is too large'}), 413
 
     try:
         file_uuid, input_path = save_uploaded_file(audio_file, current_app.config['UPLOAD_FOLDER'])

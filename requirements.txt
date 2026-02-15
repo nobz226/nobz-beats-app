@@ -1,14 +1,12 @@
 Flask==3.1.0
-
-demucs==4.0.1
 librosa==0.10.2.post1
 soundfile==0.12.1
-python-dotenv==1.0.1
-requests==2.32.3
-ffmpeg-python==0.2.0
+numpy
+
+demucs==4.0.1
+# PyTorch and torchaudio are required for Demucs to run efficiently; install platform-specific wheels as needed
 torch==2.5.1
 torchaudio==2.5.1
 
-# Notes:
-# - System-level FFmpeg must be installed separately (brew install ffmpeg / apt-get install ffmpeg)
-# - Torch installation may require platform-specific wheels; pin versions as needed for your environment
+# NOTE: System-level FFmpeg is required (install via `brew install ffmpeg` on macOS).
+# Remove any packages you do not need for your deployment.

@@ -9,6 +9,12 @@ class Config:
     UPLOAD_FOLDER = 'static/uploads'
     CONVERTED_FOLDER = 'static/converted'
 
+    # Maximum upload size in bytes (default 100 MiB)
+    MAX_CONTENT_LENGTH = int(os.getenv('MAX_CONTENT_LENGTH', 100 * 1024 * 1024))
+
+    # How long to keep converted/derived files before cleanup (seconds)
+    FILE_EXPIRY_SECONDS = int(os.getenv('FILE_EXPIRY_SECONDS', 15 * 60))
+
     # Session settings
     SESSION_TIMEOUT = 300  # 5 minutes in seconds
 

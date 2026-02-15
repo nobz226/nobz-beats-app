@@ -313,61 +313,53 @@ def convert_audio(input_path, output_path, output_format):
     """Convert audio file to specified format using ffmpeg."""
     import subprocess
     import os
-    
     try:
         print(f"=== CONVERT_AUDIO FUNCTION CALLED ===")
         print(f"Input path: {input_path}")
         print(f"Output path: {output_path}")
         print(f"Output format: {output_format}")
-        
+
         # Ensure the output directory exists
         output_dir = os.path.dirname(output_path)
         print(f"Ensuring output directory exists: {output_dir}")
         os.makedirs(output_dir, exist_ok=True)
-        
-        # Build the command as a single string
+
+        # Build the command as an argument list to avoid shell=True and quoting issues
         if output_format == 'mp3':
-            cmd = f'ffmpeg -i "{input_path}" -codec:a libmp3lame -qscale:a 2 -y "{output_path}"'
+            cmd = ['ffmpeg', '-i', input_path, '-codec:a', 'libmp3lame', '-qscale:a', '2', '-y', output_path]
         elif output_format == 'wav':
-            cmd = f'ffmpeg -i "{input_path}" -codec:a pcm_s16le -y "{output_path}"'
+            cmd = ['ffmpeg', '-i', input_path, '-codec:a', 'pcm_s16le', '-y', output_path]
         elif output_format == 'flac':
-            cmd = f'ffmpeg -i "{input_path}" -codec:a flac -y "{output_path}"'
+            cmd = ['ffmpeg', '-i', input_path, '-codec:a', 'flac', '-y', output_path]
         else:
             print(f"Invalid format: {output_format}")
             return False
-        
-        print(f"Command: {cmd}")
-        
-        # Run the command with shell=True
+
+        print(f"Command: {' '.join(cmd)}")
+
+        # Run the command safely using subprocess.run with argument list
         print("Starting subprocess...")
-        process = subprocess.Popen(
-            cmd,
-            shell=True,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE
-        )
-        
-        # Wait for the process to complete
-        print("Waiting for process to complete...")
-        stdout, stderr = process.communicate()
-        
-        # Check if the process was successful
-        print(f"Process return code: {process.returncode}")
-        if process.returncode != 0:
-            stderr_text = stderr.decode('utf-8', errors='replace')
+        proc = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        print(f"Process return code: {proc.returncode}")
+        if proc.returncode != 0:
+            stderr_text = proc.stderr or ''
             print(f"FFmpeg error: {stderr_text}")
             return False
-        
+
         # Check if the output file was created
         print(f"Checking if output file exists: {output_path}")
         if not os.path.exists(output_path):
             print(f"Output file was not created: {output_path}")
             return False
-            
+
         print(f"Conversion successful: {output_path}")
         return True
+
+    except FileNotFoundError:
+        print("FFmpeg executable not found. Ensure ffmpeg is installed and in PATH.")
+        return False
     except Exception as e:
         print(f"General conversion error: {str(e)}")
         import traceback
         traceback.print_exc()
-        return False 
+        return False

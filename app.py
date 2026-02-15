@@ -16,6 +16,9 @@ app_config = config['default']
 app.config.from_object(app_config)
 app_config.init_app(app)
 
+# Enforce maximum upload size (Flask will reject requests larger than this)
+app.config['MAX_CONTENT_LENGTH'] = getattr(app_config, 'MAX_CONTENT_LENGTH', app.config.get('MAX_CONTENT_LENGTH'))
+
 ensure_directory_exists(app.config['UPLOAD_FOLDER'])
 ensure_directory_exists(app.config['CONVERTED_FOLDER'])
 

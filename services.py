@@ -5,7 +5,11 @@ import time
 import threading
 import torch
 from flask import url_for
-from utils import save_uploaded_file, cleanup_file, convert_audio
+from utils import save_uploaded_file, cleanup_file
+import utils as utils_module
+
+# Default cleanup delay (seconds) — can be overridden with FILE_EXPIRY_SECONDS env var
+CLEANUP_DELAY_SECONDS = int(os.getenv('FILE_EXPIRY_SECONDS', '900'))
 
 class AudioConversionService:
     """Service for handling audio file conversions."""
@@ -62,9 +66,9 @@ class AudioConversionService:
             print(f"Ensuring output directory exists: {os.path.dirname(output_path)}")
             os.makedirs(os.path.dirname(output_path), exist_ok=True)
             
-            # Convert the file
+            # Convert the file using the utils conversion helper
             print(f"Converting file from {input_path} to {output_path}")
-            if convert_audio(input_path, output_path, target_format):
+            if utils_module.convert_audio(input_path, output_path, target_format):
                 # Verify the output file was created
                 if not os.path.exists(output_path):
                     print(f"Output file not created: {output_path}")
@@ -89,9 +93,10 @@ class AudioConversionService:
                         'error': f'Error generating download URL: {str(url_error)}'
                     }
                 
-                # Schedule cleanup
-                print(f"Scheduling cleanup for: {output_path}")
-                self._schedule_file_cleanup(output_path, 15)  # 15 seconds
+                # Schedule cleanup (configurable delay)
+                delay = CLEANUP_DELAY_SECONDS
+                print(f"Scheduling cleanup for: {output_path} in {delay} seconds")
+                self._schedule_file_cleanup(output_path, delay)
                 
                 return {
                     'success': True,
