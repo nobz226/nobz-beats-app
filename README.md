@@ -194,7 +194,9 @@ Contributions are welcome. Suggested steps:
 License
 -------
 
-This repository is intended to be open source. Add a `LICENSE` file to declare a license (MIT, Apache-2.0, etc.). If you want this project to be MIT-licensed, create a `LICENSE` file containing the MIT license text.
+This project is licensed under the MIT License. See the `LICENSE` file in the repository root for the full text.
+
+Summary: Permission is granted, free of charge, to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, subject to including the copyright and permission notice.
 
 Contact and further help
 ------------------------
