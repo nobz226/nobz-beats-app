@@ -10,3 +10,5 @@ torchaudio==2.5.1
 
 # NOTE: System-level FFmpeg is required (install via `brew install ffmpeg` on macOS).
 # Remove any packages you do not need for your deployment.
+
+pytest

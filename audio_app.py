@@ -3,7 +3,7 @@ import os
 import uuid
 from config import config
 from utils import ensure_directory_exists, save_uploaded_file, cleanup_file
-from services import analyze_audio, convert_audio, separate_audio
+import services
 
 # Minimal Flask app focused on audio tools: analyzer, converter, separator
 app = Flask(__name__)
@@ -35,7 +35,7 @@ def api_analyze():
         return jsonify({'success': False, 'message': str(ve)}), 400
 
     try:
-        result = analyze_audio(filepath)
+        result = services.analyze_audio(filepath)
         return jsonify({'success': True, 'analysis': result})
     except Exception as e:
         return jsonify({'success': False, 'message': str(e)}), 500
@@ -55,7 +55,7 @@ def api_convert():
         return jsonify({'success': False, 'message': str(ve)}), 400
 
     try:
-        converted_path = convert_audio(filepath, out_format, app.config['CONVERTED_FOLDER'])
+        converted_path = services.convert_audio(filepath, out_format, app.config['CONVERTED_FOLDER'])
         return send_file(converted_path, as_attachment=True)
     except Exception as e:
         return jsonify({'success': False, 'message': str(e)}), 500
@@ -80,7 +80,7 @@ def api_separate():
     ensure_directory_exists(output_dir)
 
     try:
-        zip_path = separate_audio(filepath, output_dir, model=model)
+        zip_path = services.separate_audio(filepath, output_dir, model=model)
         return send_file(zip_path, as_attachment=True)
     except Exception as e:
         return jsonify({'success': False, 'message': str(e)}), 500

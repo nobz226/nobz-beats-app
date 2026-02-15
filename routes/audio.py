@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify, current_app, send_file
-from services import analyze_audio, convert_audio, separate_audio
+import services
 from utils import save_uploaded_file, cleanup_file, ALLOWED_AUDIO_EXTENSIONS
 import os
 import traceback
@@ -22,7 +22,7 @@ def analyze_endpoint():
         return jsonify({'success': False, 'error': str(ve)}), 400
 
     try:
-        result = analyze_audio(input_path)
+        result = services.analyze_audio(input_path)
         return jsonify({'success': True, 'analysis': result})
     except Exception as e:
         traceback.print_exc()
@@ -47,7 +47,7 @@ def convert_endpoint():
         return jsonify({'success': False, 'error': str(ve)}), 400
 
     try:
-        converted_path = convert_audio(input_path, out_format, current_app.config['CONVERTED_FOLDER'])
+        converted_path = services.convert_audio(input_path, out_format, current_app.config['CONVERTED_FOLDER'])
         return send_file(converted_path, as_attachment=True)
     except Exception as e:
         traceback.print_exc()
@@ -78,7 +78,7 @@ def separate_endpoint():
     os.makedirs(output_dir, exist_ok=True)
 
     try:
-        zip_path = separate_audio(input_path, output_dir, model=model)
+        zip_path = services.separate_audio(input_path, output_dir, model=model)
         return send_file(zip_path, as_attachment=True)
     except Exception as e:
         traceback.print_exc()
