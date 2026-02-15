@@ -1,4 +1,4 @@
-# NOBZ BEATS - Audio Tools API
+# Audio Tools API (by Nobz)
 
 This repository provides a small, self-contained Flask-based API exposing three audio tools useful for building audio applications:
 
