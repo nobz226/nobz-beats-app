@@ -37,7 +37,7 @@ Requirements
 
 Python dependencies are listed in `requirements.txt`. This project also depends on system tools:
 
-- Python 3.8 or newer
+- Python 3.11.13 (must be this version, for now)
 - System `ffmpeg` (install via `brew install ffmpeg` on macOS)
 - Demucs (either Python package or CLI; see notes below)
 
