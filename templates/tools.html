@@ -63,6 +63,17 @@
           </form>
           <div id="separateResult" class="result"></div>
         </div>
+
+        <div class="card">
+          <h3>Stem Transcription</h3>
+          <p class="small">Upload a single stem and receive a simple note transcription.</p>
+          <form id="transcribeForm">
+            <label>Stem file <input type="file" name="file" accept="audio/*" required></label>
+            <label style="margin-left: 15px;"><input type="checkbox" name="downloadXml" id="downloadXml"> Download as MusicXML file</label>
+            <button type="submit">Transcribe</button>
+          </form>
+          <div id="transcribeResult" class="result" aria-live="polite"></div>
+        </div>
       </div>
 
       <div id="systemStatus" class="card" style="margin-bottom:18px">
@@ -72,6 +83,7 @@
       <p style="margin-top:0" class="small">Note: Processing may take several seconds (or minutes for stem separation). Demucs/FFmpeg must be installed on the server.</p>
 
     </div>
-    <script src="/static/js/tools.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/opensheetmusicdisplay@1.9.9/build/opensheetmusicdisplay.min.js"></script>
+    <script src="/static/js/tools.js?v=2"></script>
   </body>
 </html>

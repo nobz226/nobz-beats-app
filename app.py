@@ -1,7 +1,7 @@
 from flask import Flask, jsonify, render_template
 import os
 from config import config
-from utils import ensure_directory_exists
+from utils import ensure_directory_exists, cleanup_expired_files
 from routes import register_blueprints
 
 # Minimal Flask app focused on audio tools: analyzer, converter, separator
@@ -18,6 +18,7 @@ app.config['MAX_CONTENT_LENGTH'] = getattr(app_config, 'MAX_CONTENT_LENGTH', app
 
 ensure_directory_exists(app.config['UPLOAD_FOLDER'])
 ensure_directory_exists(app.config['CONVERTED_FOLDER'])
+cleanup_expired_files(app.config['CONVERTED_FOLDER'], app.config['FILE_EXPIRY_SECONDS'])
 
 
 # Routes
