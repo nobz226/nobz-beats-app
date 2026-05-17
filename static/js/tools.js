@@ -111,12 +111,12 @@ document.addEventListener('DOMContentLoaded', async () => {
   const convertForm = document.getElementById('convertForm');
   const convertResult = document.getElementById('convertResult');
   convertForm.action = '/api/convert';
-  convertForm.addEventListener('submit', (e) => { e.preventDefault(); setButtonState(convertForm, true); postFormAndDownload(convertForm, convertResult).finally(()=>setButtonState(convertForm, false)); });
+  convertForm.addEventListener('submit', (e) => { e.preventDefault(); setButtonState(convertForm, true); postFormAndDownloadWithFormat(convertForm, convertResult).finally(()=>setButtonState(convertForm, false)); });
 
   const separateForm = document.getElementById('separateForm');
   const separateResult = document.getElementById('separateResult');
   separateForm.action = '/api/separate';
-  separateForm.addEventListener('submit', (e) => { e.preventDefault(); setButtonState(separateForm, true); postFormAndDownload(separateForm, separateResult).finally(()=>setButtonState(separateForm, false)); });
+  separateForm.addEventListener('submit', (e) => { e.preventDefault(); setButtonState(separateForm, true); postFormAndDownloadWithFormat(separateForm, separateResult).finally(()=>setButtonState(separateForm, false)); });
 
   const transcribeForm = document.getElementById('transcribeForm');
   const transcribeResult = document.getElementById('transcribeResult');
