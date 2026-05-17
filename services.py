@@ -3,257 +3,201 @@ import gc
 import uuid
 import time
 import threading
-import torch
-from flask import url_for
-from utils import save_uploaded_file, cleanup_file
+import traceback
+from utils import save_uploaded_file, cleanup_file, analyze_audio_file, transcribe_audio_file, notes_to_musicxml
 import utils as utils_module
 
 # Default cleanup delay (seconds) — can be overridden with FILE_EXPIRY_SECONDS env var
 CLEANUP_DELAY_SECONDS = int(os.getenv('FILE_EXPIRY_SECONDS', '900'))
 
-class AudioConversionService:
-    """Service for handling audio file conversions."""
-    
+
+def _validate_file_upload(audio_file):
+    if not audio_file or not getattr(audio_file, 'filename', None):
+        raise ValueError('Invalid file upload')
+
+
+class AudioAnalysisService:
+    """Service for handling audio analysis."""
+
     def __init__(self, upload_folder, converted_folder):
         self.upload_folder = upload_folder
         self.converted_folder = converted_folder
-    
+
+    def analyze_file(self, audio_file):
+        input_path = None
+        try:
+            _validate_file_upload(audio_file)
+            _, input_path = save_uploaded_file(audio_file, self.upload_folder)
+            return analyze_audio_file(input_path)
+        except ValueError as ve:
+            return {'success': False, 'error': str(ve)}
+        except Exception as e:
+            print(f'Analysis error: {str(e)}')
+            traceback.print_exc()
+            return {'success': False, 'error': f'Analysis error: {str(e)}'}
+        finally:
+            if input_path and os.path.exists(input_path):
+                cleanup_file(input_path)
+
+
+class AudioConversionService:
+    """Service for handling audio file conversions."""
+
+    def __init__(self, upload_folder, converted_folder):
+        self.upload_folder = upload_folder
+        self.converted_folder = converted_folder
+
     def convert_file(self, audio_file, target_format):
-        """Convert an uploaded audio file to the target format."""
         input_path = None
         output_path = None
-        
         try:
-            print("=== CONVERT_FILE METHOD CALLED ===")
-            # Validate input
-            if not audio_file or not hasattr(audio_file, 'filename') or not audio_file.filename:
-                print("Invalid file: audio_file is None or has no filename")
-                return {
-                    'success': False,
-                    'error': 'Invalid file'
-                }
-                
-            # Validate target format
+            _validate_file_upload(audio_file)
+
             if target_format not in ['mp3', 'wav', 'flac']:
-                print(f"Invalid format: {target_format}")
-                return {
-                    'success': False,
-                    'error': f'Invalid format: {target_format}'
-                }
-            
-            # Save the uploaded file
-            print(f"Saving uploaded file: {audio_file.filename}")
-            file_uuid, input_path = save_uploaded_file(audio_file, self.upload_folder)
-            print(f"File saved to: {input_path}")
-            
-            # Verify the file was saved
-            if not os.path.exists(input_path):
-                print(f"File not saved: {input_path}")
-                return {
-                    'success': False,
-                    'error': 'Failed to save uploaded file'
-                }
-            
-            # Create output path
-            original_filename = audio_file.filename
-            original_name = os.path.splitext(original_filename)[0]
-            output_filename = f"{original_name}.{target_format}"  # User-friendly name
-            server_output_filename = f"{file_uuid}_{output_filename}"  # Server storage name
+                return {'success': False, 'error': f'Invalid format: {target_format}'}
+
+            _, input_path = save_uploaded_file(audio_file, self.upload_folder)
+            original_name = os.path.splitext(audio_file.filename)[0]
+            server_output_filename = f"{uuid.uuid4().hex}_{original_name}.{target_format}"
             output_path = os.path.join(self.converted_folder, server_output_filename)
-            print(f"Output path: {output_path}")
-            
-            # Ensure the output directory exists
-            print(f"Ensuring output directory exists: {os.path.dirname(output_path)}")
             os.makedirs(os.path.dirname(output_path), exist_ok=True)
-            
-            # Convert the file using the utils conversion helper
-            print(f"Converting file from {input_path} to {output_path}")
-            if utils_module.convert_audio(input_path, output_path, target_format):
-                # Verify the output file was created
-                if not os.path.exists(output_path):
-                    print(f"Output file not created: {output_path}")
-                    return {
-                        'success': False,
-                        'error': 'Conversion completed but output file not found'
-                    }
-                
-                print(f"File converted successfully: {output_path}")
-                
-                # Generate download URL - use a direct approach without url_for
-                try:
-                    # Hardcode the URL path
-                    download_url = f"/static/converted/{server_output_filename}"
-                    print(f"Generated URL: {download_url}")
-                except Exception as url_error:
-                    print(f"Error generating URL: {str(url_error)}")
-                    import traceback
-                    traceback.print_exc()
-                    return {
-                        'success': False,
-                        'error': f'Error generating download URL: {str(url_error)}'
-                    }
-                
-                # Schedule cleanup (configurable delay)
-                delay = CLEANUP_DELAY_SECONDS
-                print(f"Scheduling cleanup for: {output_path} in {delay} seconds")
-                self._schedule_file_cleanup(output_path, delay)
-                
-                return {
-                    'success': True,
-                    'download_url': download_url,
-                    'filename': output_filename
-                }
-            else:
-                print("Conversion failed")
-                return {
-                    'success': False,
-                    'error': 'Conversion failed'
-                }
-        
+
+            if not utils_module.convert_audio(input_path, output_path, target_format):
+                return {'success': False, 'error': 'Conversion failed'}
+
+            if not os.path.exists(output_path):
+                return {'success': False, 'error': 'Output file not found after conversion'}
+
+            self._schedule_file_cleanup(output_path, CLEANUP_DELAY_SECONDS)
+            return {'success': True, 'output_path': output_path, 'filename': server_output_filename}
+        except ValueError as ve:
+            return {'success': False, 'error': str(ve)}
         except Exception as e:
-            print(f"Conversion error: {str(e)}")
-            import traceback
+            print(f'Conversion error: {str(e)}')
             traceback.print_exc()
-            return {
-                'success': False,
-                'error': f'Conversion error: {str(e)}'
-            }
-        
+            return {'success': False, 'error': f'Conversion error: {str(e)}'}
         finally:
-            # Clean up input file
             if input_path and os.path.exists(input_path):
-                print(f"Cleaning up input file: {input_path}")
                 cleanup_file(input_path)
-    
+
     def _schedule_file_cleanup(self, file_path, delay_seconds):
-        """Schedule a file for deletion after a delay."""
         def delete_file():
             time.sleep(delay_seconds)
             cleanup_file(file_path)
-        
-        cleanup_thread = threading.Thread(target=delete_file)
-        cleanup_thread.daemon = True
+
+        cleanup_thread = threading.Thread(target=delete_file, daemon=True)
         cleanup_thread.start()
 
 
 class StemSeparationService:
     """Service for handling stem separation."""
-    
+
     def __init__(self, upload_folder, converted_folder):
         self.upload_folder = upload_folder
         self.converted_folder = converted_folder
-    
-    def separate_stems(self, audio_file):
-        """Separate an audio file into stems."""
-        import demucs.separate
-        
+
+    def separate_stems(self, audio_file, model='htdemucs'):
         input_path = None
-        
+        output_dir = None
         try:
-            # Save the uploaded file
-            file_uuid, input_path = save_uploaded_file(audio_file, self.upload_folder)
-            output_dir = file_uuid + "_" + os.path.splitext(os.path.basename(input_path))[0]
-            
-            # Clear memory
-            del audio_file
-            gc.collect()
-            
-            # Configure demucs for separation
-            demucs.separate.main([
-                "--mp3",
-                "-n", "htdemucs",
-                "--segment", "7",
-                "-d", "cpu",
-                "--overlap", "0.1",
-                "--out", self.converted_folder,
-                input_path
-            ])
-            
-            # Generate URLs for stems
-            stem_paths = {}
-            source_stems = ['drums', 'bass', 'vocals', 'other']
-            display_stems = ['drums', 'bass', 'vocals', 'melody']
-            
-            # Find output directory
-            possible_dirs = [
-                output_dir,
-                file_uuid,
-                os.path.splitext(os.path.basename(input_path))[0]
-            ]
-            
-            found_dir = None
-            for dir_name in possible_dirs:
-                check_path = os.path.join(self.converted_folder, 'htdemucs', dir_name)
-                if os.path.exists(check_path):
-                    found_dir = dir_name
-                    break
-            
-            if not found_dir:
-                raise Exception("Output directory not found")
-            
-            # Get stem URLs
-            for source_stem, display_stem in zip(source_stems, display_stems):
-                stem_filename = f"{source_stem}.mp3"
-                full_path = os.path.join(self.converted_folder, 'htdemucs', found_dir, stem_filename)
-                if os.path.exists(full_path):
-                    relative_path = os.path.join('htdemucs', found_dir, stem_filename)
-                    stem_paths[display_stem] = url_for('static', filename=f'converted/{relative_path}')
-            
-            # Force garbage collection
-            gc.collect()
-            try:
-                if hasattr(torch, 'cuda') and torch.cuda.is_available():
-                    torch.cuda.empty_cache()
-            except Exception as e:
-                print(f"Warning: Could not clear CUDA cache: {str(e)}")
-            
-            return {
-                'success': True,
-                'stems': stem_paths,
-                'session_id': found_dir
-            }
-            
+            _validate_file_upload(audio_file)
+            _, input_path = save_uploaded_file(audio_file, self.upload_folder)
+            output_dir = os.path.join(self.converted_folder, uuid.uuid4().hex)
+            os.makedirs(output_dir, exist_ok=True)
+
+            zip_path = separate_audio(input_path, output_dir, model=model)
+            self._schedule_directory_cleanup(output_dir, CLEANUP_DELAY_SECONDS)
+            return {'success': True, 'zip_path': zip_path}
+        except ValueError as ve:
+            return {'success': False, 'error': str(ve)}
         except Exception as e:
-            print(f"Separation error: {str(e)}")
-            import traceback
-            print(f"Full error details: {traceback.format_exc()}")
-            return {
-                'success': False,
-                'error': 'Failed to process audio file. Please try again with a different file.'
-            }
+            print(f'Separation error: {str(e)}')
+            traceback.print_exc()
+            return {'success': False, 'error': 'Failed to process audio file. Please try again with a different file.'}
         finally:
-            # Clean up input file regardless of success or failure
             if input_path and os.path.exists(input_path):
-                print(f"Cleaning up input file: {input_path}")
                 cleanup_file(input_path)
-    
+
+    def _schedule_directory_cleanup(self, directory_path, delay_seconds):
+        def delete_directory():
+            time.sleep(delay_seconds)
+            try:
+                import shutil
+                shutil.rmtree(directory_path, ignore_errors=True)
+            except Exception as cleanup_error:
+                print(f'Error cleaning up directory {directory_path}: {cleanup_error}')
+
+        cleanup_thread = threading.Thread(target=delete_directory, daemon=True)
+        cleanup_thread.start()
+
     def cleanup_session(self, session_id):
-        """Clean up stem separation session files."""
         try:
-            print(f"=== CLEANUP_SESSION METHOD CALLED for session {session_id} ===")
-            output_dir = os.path.join(self.converted_folder, 'htdemucs', session_id)
-            print(f"Checking if directory exists: {output_dir}")
-            
+            output_dir = os.path.join(self.converted_folder, session_id)
             if os.path.exists(output_dir):
-                print(f"Directory exists, removing: {output_dir}")
                 import shutil
                 shutil.rmtree(output_dir)
-                print(f"Successfully removed directory: {output_dir}")
-                return {'success': True}
-            
-            print(f"Directory does not exist: {output_dir}")
-            return {'success': True, 'message': 'Directory already cleaned'}
+            return {'success': True}
         except Exception as e:
-            print(f"Cleanup error: {str(e)}")
-            import traceback
+            print(f'Cleanup error: {str(e)}')
             traceback.print_exc()
-            return {'success': False, 'error': str(e)} 
+            return {'success': False, 'error': str(e)}
+
+
+class AudioTranscriptionService:
+    """Service for handling stem transcription."""
+
+    def __init__(self, upload_folder, converted_folder):
+        self.upload_folder = upload_folder
+        self.converted_folder = converted_folder
+
+    def transcribe_file(self, audio_file):
+        input_path = None
+        try:
+            _validate_file_upload(audio_file)
+            _, input_path = save_uploaded_file(audio_file, self.upload_folder)
+            result = transcribe_audio_file(input_path)
+            
+            if result.get('success'):
+                bpm = result.get('bpm', 120)
+                notes = result.get('notes', [])
+                
+                try:
+                    # Always attempt to generate MusicXML
+                    # notes_to_musicxml guarantees a non-None return with improved error handling
+                    musicxml = notes_to_musicxml(notes, bpm=bpm)
+                    
+                    if musicxml:
+                        result['musicxml'] = musicxml
+                        print(f"MusicXML generated successfully ({len(musicxml)} characters)")
+                    else:
+                        # This should not happen with the improved notes_to_musicxml,
+                        # but handle it just in case
+                        result['musicxml_error'] = 'MusicXML generation returned None/empty'
+                        print("WARNING: MusicXML generation returned None")
+                        
+                except Exception as musicxml_error:
+                    print(f"ERROR generating MusicXML in service: {musicxml_error}")
+                    import traceback
+                    traceback.print_exc()
+                    result['musicxml_error'] = f'MusicXML generation error: {str(musicxml_error)}'
+            
+            return result
+            
+        except ValueError as ve:
+            return {'success': False, 'error': str(ve)}
+        except Exception as e:
+            print(f'Transcription error: {str(e)}')
+            traceback.print_exc()
+            return {'success': False, 'error': f'Transcription error: {str(e)}'}
+        finally:
+            if input_path and os.path.exists(input_path):
+                cleanup_file(input_path)
+
 
 # --- Convenience functional wrappers for minimal API ---
 
 def analyze_audio(input_path):
     """Wrapper that analyzes an audio file and returns analysis results."""
-    from utils import analyze_audio_file
     return analyze_audio_file(input_path)
 
 
@@ -282,6 +226,7 @@ def separate_audio(input_path, output_dir, model='htdemucs'):
     import subprocess
     import os
     import zipfile
+    import re
 
     # Normalize model (treat empty string as default)
     model = model or 'htdemucs'
@@ -290,11 +235,46 @@ def separate_audio(input_path, output_dir, model='htdemucs'):
     os.makedirs(output_dir, exist_ok=True)
 
     cmd = ['demucs', '-n', model, '-o', output_dir, '--segment', '7', '--overlap', '0.1', input_path]
+    print(f"Starting Demucs stem separation with model '{model}'...")
+    print(f"Command: {' '.join(cmd)}")
 
     try:
-        proc = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        proc = subprocess.Popen(
+            cmd,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            text=True,
+            bufsize=1,
+            universal_newlines=True,
+        )
+
+        if proc.stdout is None:
+            raise RuntimeError('Unable to capture Demucs output.')
+
+        progress_pct = 0
+        for line in proc.stdout:
+            line = line.rstrip('\n')
+            if not line:
+                continue
+
+            # Parse percentage progress from stdout lines
+            match = re.search(r'(\d{1,3})\s*%|progress[:=]?\s*(\d{1,3})', line, re.IGNORECASE)
+            if match:
+                pct = int(match.group(1) or match.group(2))
+                pct = max(0, min(100, pct))
+                if pct != progress_pct:
+                    progress_pct = pct
+                    bar = ('#' * (pct // 2)).ljust(50, '-')
+                    print(f"\r[{bar}] {progress_pct:3d}% {line}", end='', flush=True)
+                    if progress_pct == 100:
+                        print()
+            else:
+                print(line)
+
+        proc.wait()
         if proc.returncode != 0:
-            raise RuntimeError(f"Demucs failed (code {proc.returncode}): {proc.stderr.strip()}")
+            raise RuntimeError(f"Demucs failed (code {proc.returncode}). Check output above for details.")
+
     except FileNotFoundError:
         raise RuntimeError("Demucs CLI not found. Please install demucs and ensure it's in PATH.")
 
@@ -308,4 +288,5 @@ def separate_audio(input_path, output_dir, model='htdemucs'):
                     arcname = os.path.relpath(full, output_dir)
                     zf.write(full, arcname)
 
+    print(f"Demucs separation complete. Zip created at: {zip_path}")
     return zip_path

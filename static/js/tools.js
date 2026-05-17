@@ -1,20 +1,35 @@
-async function postFormAsJson(form, resultEl) {
+async function postFormAsJson(form, resultEl, callback) {
+  console.debug('postFormAsJson submitting to', form.action);
   resultEl.textContent = 'Processing...';
   try {
     const fd = new FormData(form);
     const res = await fetch(form.action, { method: 'POST', body: fd });
     const json = await res.json();
+    console.debug('postFormAsJson response', json);
     if (!res.ok) throw new Error(json.error || JSON.stringify(json));
-    resultEl.innerHTML = `<pre>${JSON.stringify(json, null, 2)}</pre>`;
+
+    let handled = false;
+    if (typeof callback === 'function') {
+      try {
+        handled = callback(json) === true;
+      } catch (callbackErr) {
+        console.error('Callback error:', callbackErr);
+      }
+    }
+
+    if (!handled) {
+      resultEl.innerHTML = `<pre>${JSON.stringify(json, null, 2)}</pre>`;
+    }
   } catch (err) {
     resultEl.innerHTML = `<div style="color:#b00">Error: ${err.message}</div>`;
   }
 }
 
-async function postFormAndDownload(form, resultEl) {
+async function postFormAndDownloadWithFormat(form, resultEl, format) {
   resultEl.textContent = 'Processing...';
   try {
     const fd = new FormData(form);
+    if (format) fd.append('format', format);
     const res = await fetch(form.action, { method: 'POST', body: fd });
     if (!res.ok) {
       // try parse JSON error
@@ -42,6 +57,9 @@ async function postFormAndDownload(form, resultEl) {
     resultEl.innerHTML = `<div style="color:#b00">Error: ${err.message}</div>`;
   }
 }
+
+
+console.debug('tools.js loaded');
 
 // Health check and utility
 async function fetchHealth() {
@@ -87,16 +105,63 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   const analyzeForm = document.getElementById('analyzeForm');
   const analyzeResult = document.getElementById('analyzeResult');
-  analyzeForm.action = '/audio/analyze';
+  analyzeForm.action = '/api/analyze';
   analyzeForm.addEventListener('submit', (e) => { e.preventDefault(); setButtonState(analyzeForm, true); postFormAsJson(analyzeForm, analyzeResult).finally(()=>setButtonState(analyzeForm, false)); });
 
   const convertForm = document.getElementById('convertForm');
   const convertResult = document.getElementById('convertResult');
-  convertForm.action = '/audio/convert';
+  convertForm.action = '/api/convert';
   convertForm.addEventListener('submit', (e) => { e.preventDefault(); setButtonState(convertForm, true); postFormAndDownload(convertForm, convertResult).finally(()=>setButtonState(convertForm, false)); });
 
   const separateForm = document.getElementById('separateForm');
   const separateResult = document.getElementById('separateResult');
-  separateForm.action = '/audio/separate';
+  separateForm.action = '/api/separate';
   separateForm.addEventListener('submit', (e) => { e.preventDefault(); setButtonState(separateForm, true); postFormAndDownload(separateForm, separateResult).finally(()=>setButtonState(separateForm, false)); });
+
+  const transcribeForm = document.getElementById('transcribeForm');
+  const transcribeResult = document.getElementById('transcribeResult');
+  transcribeForm.action = '/api/transcribe';
+  transcribeForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    setButtonState(transcribeForm, true);
+    
+    // Check if user wants to download MusicXML
+    const downloadXmlCheckbox = document.getElementById('downloadXml');
+    if (downloadXmlCheckbox && downloadXmlCheckbox.checked) {
+      // Download MusicXML file
+      postFormAndDownloadWithFormat(transcribeForm, transcribeResult, 'musicxml').finally(()=>setButtonState(transcribeForm, false));
+      return;
+    }
+    
+    // Normal JSON response with visual display
+    postFormAsJson(transcribeForm, transcribeResult, (json) => {
+      console.debug('transcribe callback', json);
+      if (json.musicxml) {
+        const OSMD = window.opensheetmusicdisplay?.OpenSheetMusicDisplay || window.OpenSheetMusicDisplay || window.opensheetmusicdisplay || window.osmd;
+        if (!OSMD) {
+          transcribeResult.innerHTML = '<div style="color:#b00">Notation library failed to load. Please refresh the page.</div>';
+          return true;
+        }
+        transcribeResult.innerHTML = '<div id="notationContainer" style="min-height:360px;"></div>';
+        const div = document.getElementById('notationContainer');
+        try {
+          const osmd = new OSMD(div, {autoResize: true});
+          osmd.load(json.musicxml).then(() => osmd.render()).catch((err) => {
+            transcribeResult.innerHTML = `<div style="color:#b00">Notation render failed: ${err.message}</div>`;
+          });
+        } catch (renderErr) {
+          console.error('OSMD instantiation error', renderErr);
+          transcribeResult.innerHTML = `<div style="color:#b00">Notation setup failed: ${renderErr.message}</div>`;
+        }
+        return true;
+      }
+      if (json.musicxml_error) {
+        transcribeResult.innerHTML = `<div style="color:#b00">MusicXML was not generated: ${json.musicxml_error}</div><pre>${JSON.stringify(json, null, 2)}</pre>`;
+        return true;
+      }
+      console.debug('transcribe no musicxml, showing raw JSON');
+      transcribeResult.innerHTML = `<pre>${JSON.stringify(json, null, 2)}</pre>`;
+      return true;
+    }).finally(()=>setButtonState(transcribeForm, false));
+  });
 });
