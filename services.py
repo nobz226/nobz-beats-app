@@ -4,7 +4,7 @@ import uuid
 import time
 import threading
 import traceback
-from utils import save_uploaded_file, cleanup_file, analyze_audio_file, transcribe_audio_file, notes_to_musicxml
+from utils import save_uploaded_file, cleanup_file, analyze_audio_file
 import utils as utils_module
 
 # Default cleanup delay (seconds) — can be overridden with FILE_EXPIRY_SECONDS env var
@@ -110,10 +110,14 @@ class StemSeparationService:
             return {'success': True, 'zip_path': zip_path}
         except ValueError as ve:
             return {'success': False, 'error': str(ve)}
+        except RuntimeError as re:
+            print(f'Separation error: {str(re)}')
+            traceback.print_exc()
+            return {'success': False, 'error': str(re)}
         except Exception as e:
             print(f'Separation error: {str(e)}')
             traceback.print_exc()
-            return {'success': False, 'error': 'Failed to process audio file. Please try again with a different file.'}
+            return {'success': False, 'error': f'Separation error: {str(e)}'}
         finally:
             if input_path and os.path.exists(input_path):
                 cleanup_file(input_path)
@@ -141,57 +145,6 @@ class StemSeparationService:
             print(f'Cleanup error: {str(e)}')
             traceback.print_exc()
             return {'success': False, 'error': str(e)}
-
-
-class AudioTranscriptionService:
-    """Service for handling stem transcription."""
-
-    def __init__(self, upload_folder, converted_folder):
-        self.upload_folder = upload_folder
-        self.converted_folder = converted_folder
-
-    def transcribe_file(self, audio_file):
-        input_path = None
-        try:
-            _validate_file_upload(audio_file)
-            _, input_path = save_uploaded_file(audio_file, self.upload_folder)
-            result = transcribe_audio_file(input_path)
-            
-            if result.get('success'):
-                bpm = result.get('bpm', 120)
-                notes = result.get('notes', [])
-                
-                try:
-                    # Always attempt to generate MusicXML
-                    # notes_to_musicxml guarantees a non-None return with improved error handling
-                    musicxml = notes_to_musicxml(notes, bpm=bpm)
-                    
-                    if musicxml:
-                        result['musicxml'] = musicxml
-                        print(f"MusicXML generated successfully ({len(musicxml)} characters)")
-                    else:
-                        # This should not happen with the improved notes_to_musicxml,
-                        # but handle it just in case
-                        result['musicxml_error'] = 'MusicXML generation returned None/empty'
-                        print("WARNING: MusicXML generation returned None")
-                        
-                except Exception as musicxml_error:
-                    print(f"ERROR generating MusicXML in service: {musicxml_error}")
-                    import traceback
-                    traceback.print_exc()
-                    result['musicxml_error'] = f'MusicXML generation error: {str(musicxml_error)}'
-            
-            return result
-            
-        except ValueError as ve:
-            return {'success': False, 'error': str(ve)}
-        except Exception as e:
-            print(f'Transcription error: {str(e)}')
-            traceback.print_exc()
-            return {'success': False, 'error': f'Transcription error: {str(e)}'}
-        finally:
-            if input_path and os.path.exists(input_path):
-                cleanup_file(input_path)
 
 
 # --- Convenience functional wrappers for minimal API ---

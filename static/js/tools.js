@@ -118,50 +118,5 @@ document.addEventListener('DOMContentLoaded', async () => {
   separateForm.action = '/api/separate';
   separateForm.addEventListener('submit', (e) => { e.preventDefault(); setButtonState(separateForm, true); postFormAndDownloadWithFormat(separateForm, separateResult).finally(()=>setButtonState(separateForm, false)); });
 
-  const transcribeForm = document.getElementById('transcribeForm');
-  const transcribeResult = document.getElementById('transcribeResult');
-  transcribeForm.action = '/api/transcribe';
-  transcribeForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-    setButtonState(transcribeForm, true);
-    
-    // Check if user wants to download MusicXML
-    const downloadXmlCheckbox = document.getElementById('downloadXml');
-    if (downloadXmlCheckbox && downloadXmlCheckbox.checked) {
-      // Download MusicXML file
-      postFormAndDownloadWithFormat(transcribeForm, transcribeResult, 'musicxml').finally(()=>setButtonState(transcribeForm, false));
-      return;
-    }
-    
-    // Normal JSON response with visual display
-    postFormAsJson(transcribeForm, transcribeResult, (json) => {
-      console.debug('transcribe callback', json);
-      if (json.musicxml) {
-        const OSMD = window.opensheetmusicdisplay?.OpenSheetMusicDisplay || window.OpenSheetMusicDisplay || window.opensheetmusicdisplay || window.osmd;
-        if (!OSMD) {
-          transcribeResult.innerHTML = '<div style="color:#b00">Notation library failed to load. Please refresh the page.</div>';
-          return true;
-        }
-        transcribeResult.innerHTML = '<div id="notationContainer" style="min-height:360px;"></div>';
-        const div = document.getElementById('notationContainer');
-        try {
-          const osmd = new OSMD(div, {autoResize: true});
-          osmd.load(json.musicxml).then(() => osmd.render()).catch((err) => {
-            transcribeResult.innerHTML = `<div style="color:#b00">Notation render failed: ${err.message}</div>`;
-          });
-        } catch (renderErr) {
-          console.error('OSMD instantiation error', renderErr);
-          transcribeResult.innerHTML = `<div style="color:#b00">Notation setup failed: ${renderErr.message}</div>`;
-        }
-        return true;
-      }
-      if (json.musicxml_error) {
-        transcribeResult.innerHTML = `<div style="color:#b00">MusicXML was not generated: ${json.musicxml_error}</div><pre>${JSON.stringify(json, null, 2)}</pre>`;
-        return true;
-      }
-      console.debug('transcribe no musicxml, showing raw JSON');
-      transcribeResult.innerHTML = `<pre>${JSON.stringify(json, null, 2)}</pre>`;
-      return true;
-    }).finally(()=>setButtonState(transcribeForm, false));
-  });
+
 });

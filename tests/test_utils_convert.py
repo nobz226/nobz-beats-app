@@ -1,9 +1,5 @@
-import io
 import os
 import subprocess
-from pathlib import Path
-
-import pytest
 
 from utils import convert_audio, cleanup_file, cleanup_expired_files
 
@@ -31,28 +27,6 @@ def test_convert_audio_creates_output(tmp_path, monkeypatch):
     assert success is True
     assert out_file.exists()
     assert out_file.read_bytes() == b"FAKE_MP3_CONTENT"
-
-
-def test_notes_to_musicxml_renders_measures():
-    from utils import notes_to_musicxml
-
-    try:
-        import music21
-    except ImportError:
-        pytest.skip('music21 not installed')
-
-    notes = [
-        {'pitch': 'C4', 'start': 0.0, 'duration': 1.0, 'confidence': 0.9},
-        {'pitch': 'D4', 'start': 1.0, 'duration': 1.0, 'confidence': 0.9},
-        {'pitch': 'E4', 'start': 2.0, 'duration': 1.0, 'confidence': 0.9},
-        {'pitch': 'F4', 'start': 3.0, 'duration': 1.0, 'confidence': 0.9},
-    ]
-    xml = notes_to_musicxml(notes, bpm=60, time_signature='4/4')
-    assert xml is not None
-    assert '<measure' in xml
-    assert '<time>' in xml
-    assert '<step>C</step>' in xml
-    assert '<octave>4</octave>' in xml
 
 
 def test_cleanup_expired_files_removes_old_entries(tmp_path):

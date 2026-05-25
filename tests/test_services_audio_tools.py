@@ -99,25 +99,3 @@ def test_stem_separation_service_returns_zip_path(tmp_path, monkeypatch):
     assert os.path.exists(result['zip_path'])
     assert zipfile.is_zipfile(result['zip_path'])
 
-
-def test_audio_transcription_service_returns_notes(tmp_path, monkeypatch):
-    upload_dir = tmp_path / 'uploads'
-    converted_dir = tmp_path / 'converted'
-    upload_dir.mkdir()
-    converted_dir.mkdir()
-
-    fake_file = DummyUpload('stem.wav', b'FAKE STEM DATA')
-
-    def fake_transcribe(input_path):
-        return {'success': True, 'notes': [{'pitch': 'C4', 'start': 0.0, 'duration': 0.5, 'confidence': 0.9}]}
-
-    monkeypatch.setattr(services, 'transcribe_audio_file', fake_transcribe)
-
-    service = services.AudioTranscriptionService(str(upload_dir), str(converted_dir))
-    result = service.transcribe_file(fake_file)
-
-    assert result['success'] is True
-    assert result['notes'][0]['pitch'] == 'C4'
-    assert 'musicxml' in result
-    assert '<score-partwise' in result['musicxml']
-    assert len(list(upload_dir.iterdir())) == 0

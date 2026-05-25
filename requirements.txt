@@ -7,8 +7,6 @@ demucs==4.0.1
 # PyTorch and torchaudio are required for Demucs to run efficiently; install platform-specific wheels as needed
 torch==2.5.1
 torchaudio==2.5.1
-music21==8.3.0
-
 # NOTE: System-level FFmpeg is required (install via `brew install ffmpeg` on macOS).
 # Remove any packages you do not need for your deployment.
 

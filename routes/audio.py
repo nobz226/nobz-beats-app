@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify, current_app, send_file, Response
+from flask import Blueprint, request, jsonify, current_app, send_file
 import os
 import traceback
 import services
@@ -115,67 +115,6 @@ def separate_endpoint():
             status_code = _status_code_for_error(result.get('error'))
             return _error_response(result.get('error', 'Separation failed'), status_code)
         return send_file(result['zip_path'], as_attachment=True)
-    except Exception as e:
-        traceback.print_exc()
-        return _error_response(str(e), 500)
-
-
-@audio_bp.route('/transcribe', methods=['POST'])
-def transcribe_endpoint():
-    if 'file' not in request.files:
-        return _error_response('No file provided', 400)
-
-    audio_file = request.files['file']
-    if not _is_valid_audio_file(audio_file):
-        return _error_response('Unsupported or missing audio file', 400)
-
-    max_size = current_app.config.get('MAX_CONTENT_LENGTH')
-    if request.content_length and max_size and request.content_length > max_size:
-        return _error_response('Uploaded file is too large', 413)
-
-    try:
-        service = services.AudioTranscriptionService(
-            current_app.config['UPLOAD_FOLDER'],
-            current_app.config['CONVERTED_FOLDER']
-        )
-        result = service.transcribe_file(audio_file)
-        
-        if not result.get('success'):
-            status_code = _status_code_for_error(result.get('error'))
-            return _error_response(result.get('error', 'Transcription failed'), status_code)
-
-        output_format = request.form.get('format', '').lower()
-        
-        # Handle MusicXML export request
-        if output_format in ['xml', 'musicxml']:
-            musicxml = result.get('musicxml')
-            if musicxml:
-                return Response(
-                    musicxml,
-                    mimetype='application/xml',
-                    headers={'Content-Disposition': 'attachment; filename="transcription.musicxml"'}
-                )
-            else:
-                # MusicXML generation failed
-                error_msg = result.get('musicxml_error', 'MusicXML generation failed')
-                return _error_response(f'MusicXML export failed: {error_msg}', 500)
-
-        # Default: return JSON with transcription data
-        response = {
-            'success': True,
-            'transcription': result.get('notes', []),
-        }
-        
-        # Include additional metadata if available
-        if 'bpm' in result:
-            response['bpm'] = result['bpm']
-        if 'musicxml' in result:
-            response['musicxml'] = result['musicxml']
-        if 'musicxml_error' in result:
-            response['musicxml_error'] = result['musicxml_error']
-            
-        return jsonify(response)
-        
     except Exception as e:
         traceback.print_exc()
         return _error_response(str(e), 500)
