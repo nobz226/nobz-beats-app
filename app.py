@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, render_template
+from flask import Flask, jsonify, make_response, render_template
 import os
 from config import config
 from utils import ensure_directory_exists, cleanup_expired_files
@@ -37,7 +37,11 @@ def tools():
 @app.route('/api/health')
 def api_health():
     from utils import check_system_tools
-    return jsonify(check_system_tools())
+    resp = make_response(jsonify(check_system_tools()))
+    resp.headers['Cache-Control'] = 'no-store, must-revalidate'
+    resp.headers['Pragma'] = 'no-cache'
+    resp.headers['Expires'] = '0'
+    return resp
 
 # Register the audio blueprint (analyzer, converter, separator)
 register_blueprints(app)

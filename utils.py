@@ -312,6 +312,12 @@ def check_system_tools():
     from pathlib import Path
 
     demucs_path = shutil.which('demucs')
+    if not demucs_path:
+        try:
+            import demucs  # noqa: F401
+            demucs_path = 'demucs (imported as Python module)'
+        except ImportError:
+            pass
     ffmpeg_path = shutil.which('ffmpeg')
 
     cache_dir = Path.home() / '.cache' / 'torch' / 'hub' / 'checkpoints'
